@@ -1,0 +1,10 @@
+=== Things TODO ===
+
+ - Create wrapper functions around git functions
+   - Refresh status
+   - get {unstaged, staged} files
+   - {stage, unstage, discard} files
+   - {Amend} commit state
+   - Ignore {file, pattern}
+   - Open gitignore
+   - {Create, Apply, Discard} stash
