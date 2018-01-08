@@ -2,11 +2,19 @@
 //!
 //! Is aware of cursor position and updates the rendered text according
 //! to the user actions taken
+//!
+//! The rendering considers the size of the terminal so that the container
+//! view from cursive doesn't have to worry about scrolling.
+//!
+//! When rendering the view, the current cursor position is considered and
+//! a footer with cheat sheet commands is added (can be turned off)
 
 use std::fmt::{Write, Display, Formatter, Result};
-
-
 const CURSOR_CHAR: char = '█';
+const HELP_FOOTER: &'static str = "# Cheat Sheet\n
+#    s = stage file/section, S = stage all unstaged files\n
+#    c = commit, C = commit -a (add unstaged)\n
+#    P = push to upstream\n";
 
 
 #[derive(Eq, PartialEq, Clone)]
@@ -160,13 +168,13 @@ impl Buffer {
         write!(&mut text, "\n\n").ok();
 
         /* Add small cheat sheet */
-        write!(&mut text, "# Cheat Sheet\n").ok();
-        write!(
-            &mut text,
-            "#    s = stage file/section, S = stage all unstaged files\n"
-        ).ok();
-        write!(&mut text, "#    c = commit, C = commit -a (add unstaged)\n").ok();
-        write!(&mut text, "#    P = push to upstream\n").ok();
+        write!(&mut text, "{}", HELP_FOOTER).ok();
+        // write!(
+        //     &mut text,
+        //     "#    s = stage file/section, S = stage all unstaged files\n"
+        // ).ok();
+        // write!(&mut text, "#    c = commit, C = commit -a (add unstaged)\n").ok();
+        // write!(&mut text, "#    P = push to upstream\n").ok();
 
         return text;
     }
@@ -197,4 +205,16 @@ fn get_type(vec: &Vec<(String, ChangeType)>, item: &String) -> Option<ChangeType
     }
 
     return None;
+}
+
+/// A small utility function which counds the number of lines a string occupies
+fn count_rows(string: &String) -> u64 {
+    let mut lines = 1;
+    for c in string.chars() {
+        if c == '\n' {
+            lines += 1;
+        }
+    }
+
+    return lines;
 }
