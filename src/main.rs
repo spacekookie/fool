@@ -49,23 +49,33 @@ fn main() {
     //         .button("Ok", Cursive::quit),
     // );
 
+    let mut b = buffer::Buffer::new();
+    b.untracked.push("src/control.rs".to_owned());
+    b.unstaged.push(("log.err".to_owned(), buffer::ChangeType::Deleted));
+    b.unstaged.push(("src/buffer.rs".to_owned(), buffer::ChangeType::Modified));
+    b.unstaged.push(("src/test.rs".to_owned(), buffer::ChangeType::Added));
+
+    b.staged.push(("src/main.rs".to_owned(), buffer::ChangeType::Modified));
+
+// " Local:    master ~/Projects/code/fool
+//  Head:     8ef7c41 Miep
+
+
+//  Changes:
+// ==> Modified   Cargo.lock
+//     Modified   Cargo.toml
+//     Modified   src/main.rs
+
+//  # Cheat Sheet
+//  #    s = stage file/section, S = stage all unstaged files
+//  #    c = commit, C = commit -a (add unstaged)
+//  #    P = push to upstream
+//     "
+
     let size = siv.screen_size();
     let view = BoxView::with_fixed_size(
         (size.x - 8, size.y - 4),
-        Panel::new(TextView::new(" Local:    master ~/Projects/code/fool
- Head:     8ef7c41 Miep
-
-
- Changes:
-==> Modified   Cargo.lock
-    Modified   Cargo.toml
-    Modified   src/main.rs
-
- # Cheat Sheet
- #    s = stage file/section, S = stage all unstaged files
- #    c = commit, C = commit -a (add unstaged)
- #    P = push to upstream
-    ",
+        Panel::new(TextView::new(b.render()
         )),
     );
     siv.add_layer(view);
