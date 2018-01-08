@@ -1,14 +1,21 @@
 //! A buffer that holds a git context and then renders it
-//! 
+//!
 //! Is aware of cursor position and updates the rendered text according
 //! to the user actions taken
 
 use std::fmt::{Write, Display, Formatter, Result};
 
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Clone)]
 pub enum ChangeType {
-    Added, Modified, Deleted
+    // By default untracked or staged
+    Added,
+
+    // Either tracked or staged
+    Modified,
+
+    // Either tracked or staged
+    Deleted,
 }
 
 impl Display for ChangeType {
@@ -23,12 +30,11 @@ impl Display for ChangeType {
 
 
 pub struct Buffer {
-
-    /// The selected position in the buffer 
+    /// The selected position in the buffer
     position: u64,
 
     /// Any file in the repo that is untracked
-    pub untracked: Vec<String>,
+    pub untracked: Vec<(String, ChangeType)>,
 
     /// Staged files for a commit
     pub staged: Vec<(String, ChangeType)>,
@@ -49,22 +55,66 @@ impl Buffer {
     }
 
     /// Add a file as untracked
-    /// 
+    ///
     /// If it is currently staged it will be removed from staged
     /// If it is not staged, a new file is entered into the scope
     pub fn untracked(&mut self, file: String) {
-        
+
         /* If the file was staged before */
         let (c, ctr) = contains(&self.staged, &file);
         if c {
             self.staged.remove(ctr);
         }
-        
-        self.untracked.push(file);
+
+        self.untracked.push((file, ChangeType::Added));
+    }
+
+    /// Stage a file
+    ///
+    /// Checks if the file was previously untracked or
+    /// unstaged before staging.
+    ///
+    /// If the file was neither of them, it throws an error
+    pub fn stage(&mut self, file: String) {
+
+        /* If the file was untracked */
+        let (untracked, ctr) = contains(&self.untracked, &file);
+        if untracked {
+            self.untracked.remove(ctr);
+            self.staged.push((file, ChangeType::Added));
+            return;
+        }
+
+        /* If the file was unstaged before */
+        let (unstaged, ctr) = contains(&self.unstaged, &file);
+        if unstaged {
+            let _type = get_type(&self.unstaged, &file);
+            self.unstaged.remove(ctr);
+            self.staged.push((file, _type.unwrap()));
+            return;
+        }
+    }
+
+    pub fn unstage(&mut self, file: String) {
+
+        /* Check the file is actually staged */
+        let (staged, ctr) = contains(&self.staged, &file);
+        if staged {
+
+            /* Decides wether it's untracked or unstaged */
+            let _type = get_type(&self.unstaged, &file).unwrap();
+            let item = self.staged.remove(ctr);
+
+            /* If added => untracked, if modified or deleted => just unstaged */
+            match _type {
+                ChangeType::Added => self.untracked.push(item),
+                _ => self.unstaged.push(item),
+            }
+        }
     }
 
 
-    pub fn render(&self) -> String{
+    pub fn render(&self) -> String {
         let mut text = String::new();
 
         /* Write information about the git repository */
@@ -77,7 +127,7 @@ impl Buffer {
         /* First add all untracked files */
         write!(&mut text, "Untracked files: \n").ok();
         for f in &self.untracked {
-            write!(&mut text, "  {}\n", &f).ok();
+            write!(&mut text, "  {}\n", &f.0).ok();
         }
 
         /* Some space */
@@ -103,14 +153,17 @@ impl Buffer {
 
         /* Add small cheat sheet */
         write!(&mut text, "# Cheat Sheet\n").ok();
-        write!(&mut text, "#    s = stage file/section, S = stage all unstaged files\n").ok();
+        write!(
+            &mut text,
+            "#    s = stage file/section, S = stage all unstaged files\n"
+        ).ok();
         write!(&mut text, "#    c = commit, C = commit -a (add unstaged)\n").ok();
         write!(&mut text, "#    P = push to upstream\n").ok();
 
         return text;
     }
 
-    //         let mut res = String::new(); 
+    //         let mut res = String::new();
     // for (i, ch) in x.chars().enumerate() {
     //     write!(&mut res, "{} {}\n", i, ch).unwrap();
     // }
@@ -125,4 +178,15 @@ fn contains(vec: &Vec<(String, ChangeType)>, item: &String) -> (bool, usize) {
         ctr += 1;
     }
     return (false, ctr);
+}
+
+/// Get the type of a string file
+fn get_type(vec: &Vec<(String, ChangeType)>, item: &String) -> Option<ChangeType> {
+    for meh in vec {
+        if &meh.0 == item {
+            return Some(meh.1.clone());
+        }
+    }
+
+    return None;
 }
