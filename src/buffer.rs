@@ -6,6 +6,9 @@
 use std::fmt::{Write, Display, Formatter, Result};
 
 
+const CURSOR_CHAR: char = '█';
+
+
 #[derive(Eq, PartialEq, Clone)]
 pub enum ChangeType {
     // By default untracked or staged
@@ -34,13 +37,13 @@ pub struct Buffer {
     position: u64,
 
     /// Any file in the repo that is untracked
-    pub untracked: Vec<(String, ChangeType)>,
+    untracked: Vec<(String, ChangeType)>,
 
     /// Staged files for a commit
-    pub staged: Vec<(String, ChangeType)>,
+    staged: Vec<(String, ChangeType)>,
 
     /// All changes with the type that is being applied
-    pub unstaged: Vec<(String, ChangeType)>,
+    unstaged: Vec<(String, ChangeType)>,
 }
 
 
@@ -58,7 +61,7 @@ impl Buffer {
     ///
     /// If it is currently staged it will be removed from staged
     /// If it is not staged, a new file is entered into the scope
-    pub fn untracked(&mut self, file: String) {
+    pub fn add_untracked(&mut self, file: String) {
 
         /* If the file was staged before */
         let (c, ctr) = contains(&self.staged, &file);
@@ -69,33 +72,34 @@ impl Buffer {
         self.untracked.push((file, ChangeType::Added));
     }
 
-    /// Stage a file
+    /// Stage a file for a certain type of action
     ///
-    /// Checks if the file was previously untracked or
-    /// unstaged before staging.
-    ///
-    /// If the file was neither of them, it throws an error
-    pub fn stage(&mut self, file: String) {
+    /// If it was previously untracked or unstaged, it will
+    /// be removed from those sets before
+    pub fn stage(&mut self, file: String, t: ChangeType) {
 
         /* If the file was untracked */
         let (untracked, ctr) = contains(&self.untracked, &file);
         if untracked {
             self.untracked.remove(ctr);
-            self.staged.push((file, ChangeType::Added));
-            return;
         }
 
         /* If the file was unstaged before */
         let (unstaged, ctr) = contains(&self.unstaged, &file);
         if unstaged {
-            let _type = get_type(&self.unstaged, &file);
+            let _type = get_type(&self.unstaged, &file).unwrap();
+            if _type != t {
+                panic!("Invalid staging!");
+            }
+
             self.unstaged.remove(ctr);
-            self.staged.push((file, _type.unwrap()));
-            return;
         }
+
+        self.staged.push((file, t));
     }
 
-    pub fn unstage(&mut self, file: String) {
+    /// Add a file as unstaged
+    pub fn add_unstaged(&mut self, file: String, t: ChangeType) {
 
         /* Check the file is actually staged */
         let (staged, ctr) = contains(&self.staged, &file);
@@ -103,21 +107,25 @@ impl Buffer {
 
             /* Decides wether it's untracked or unstaged */
             let _type = get_type(&self.unstaged, &file).unwrap();
-            let item = self.staged.remove(ctr);
-
-            /* If added => untracked, if modified or deleted => just unstaged */
-            match _type {
-                ChangeType::Added => self.untracked.push(item),
-                _ => self.unstaged.push(item),
+            if _type != t {
+                panic!("Invalid change type!");
             }
+
+            self.staged.remove(ctr);
+        }
+
+        /* If added => untracked, if modified or deleted => just unstaged */
+        match t {
+            ChangeType::Added => self.untracked.push((file, t)),
+            _ => self.unstaged.push((file, t)),
         }
     }
-
 
     pub fn render(&self) -> String {
         let mut text = String::new();
 
         /* Write information about the git repository */
+        // FIXME: Move thie header somewhere else?
         write!(&mut text, "Local:    master ~/Projects/code/fool\n").ok();
         write!(&mut text, "Head:     adcb557 Working on the buffer logic\n").ok();
 

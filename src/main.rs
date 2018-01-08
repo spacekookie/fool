@@ -2,6 +2,7 @@ extern crate cursive;
 
 mod buffer;
 
+use buffer::{Buffer, ChangeType};
 
 use cursive::Cursive;
 use cursive::event::{Event, Key};
@@ -13,6 +14,9 @@ use cursive::align::*;
 use cursive::theme::*;
 
 fn register_callbacks(siv: &mut Cursive) {
+
+    // siv.add_global_callback(Key::Up, |_| eprintln!("ARROW UP"));
+    // siv.add_global_callback(Key::Down, |_| eprintln!("ARROW DOWN"));
 
     siv.add_global_callback('s', |_| {
         eprintln!("Staging a file");
@@ -50,34 +54,33 @@ fn main() {
     // );
 
     let mut b = buffer::Buffer::new();
-    b.untracked.push("src/control.rs".to_owned());
-    b.unstaged.push(("log.err".to_owned(), buffer::ChangeType::Deleted));
-    b.unstaged.push(("src/buffer.rs".to_owned(), buffer::ChangeType::Modified));
-    b.unstaged.push(("src/test.rs".to_owned(), buffer::ChangeType::Added));
-
-    b.staged.push(("src/main.rs".to_owned(), buffer::ChangeType::Modified));
-
-// " Local:    master ~/Projects/code/fool
-//  Head:     8ef7c41 Miep
+    b.add_untracked("src/control.rs".to_owned());
+    b.add_unstaged("log.err".to_owned(), ChangeType::Deleted);
+    b.add_unstaged("src/buffer.rs".to_owned(), ChangeType::Modified);
+    b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
+    b.stage("src/main.rs".to_owned(), ChangeType::Modified);
 
 
-//  Changes:
-// ==> Modified   Cargo.lock
-//     Modified   Cargo.toml
-//     Modified   src/main.rs
+    // " Local:    master ~/Projects/code/fool
+    //  Head:     8ef7c41 Miep
 
-//  # Cheat Sheet
-//  #    s = stage file/section, S = stage all unstaged files
-//  #    c = commit, C = commit -a (add unstaged)
-//  #    P = push to upstream
-//     "
+
+    //  Changes:
+    // ==> Modified   Cargo.lock
+    //     Modified   Cargo.toml
+    //     Modified   src/main.rs
+
+    //  # Cheat Sheet
+    //  #    s = stage file/section, S = stage all unstaged files
+    //  #    c = commit, C = commit -a (add unstaged)
+    //  #    P = push to upstream
+    //     "
+
+    let mut text_view = TextView::new(b.render());
+    text_view.set_scrollable(false);
 
     let size = siv.screen_size();
-    let view = BoxView::with_fixed_size(
-        (size.x - 8, size.y - 4),
-        Panel::new(TextView::new(b.render()
-        )),
-    );
+    let view = BoxView::with_fixed_size((size.x - 8, size.y - 4), Panel::new(text_view));
     siv.add_layer(view);
 
     /* Register keybinding callbacks */
@@ -90,6 +93,7 @@ fn main() {
 
     siv.set_autohide_menu(false);
     siv.add_global_callback(Key::Esc, |s| s.select_menubar());
+    
     siv.run();
 }
 
