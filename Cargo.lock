@@ -10,10 +10,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cursive"
-version = "0.7.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+version = "0.7.6-alpha.0"
+source = "git+https://github.com/gyscos/Cursive#df972794428e7cf0de21cf9aae1ee3b821f8a411"
 dependencies = [
- "log 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "enumset 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "maplit 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ncurses 5.88.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "num 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -21,13 +22,19 @@ dependencies = [
  "toml 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "unicode-segmentation 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "unicode-width 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xi-unicode 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "enumset"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "fool"
 version = "0.1.0"
 dependencies = [
- "cursive 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cursive 0.7.6-alpha.0 (git+https://github.com/gyscos/Cursive)",
 ]
 
 [[package]]
@@ -53,14 +60,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "libc"
 version = "0.2.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "log"
-version = "0.3.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "log"
@@ -206,15 +205,20 @@ name = "unicode-width"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
+[[package]]
+name = "xi-unicode"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
 [metadata]
 "checksum bitflags 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b3c30d3802dfb7281680d6285f2ccdaa8c2d8fee41f93805dba5c4cf50dc23cf"
 "checksum cfg-if 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d4c819a1287eb618df47cc647173c5c4c66ba19d888a6e50d605672aed3140de"
-"checksum cursive 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)" = "82b96a092541def4e42095b3201a5b4111971c551e579c091b3f121a620fe12e"
+"checksum cursive 0.7.6-alpha.0 (git+https://github.com/gyscos/Cursive)" = "<none>"
+"checksum enumset 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ccc43ef14628406463dbc77a50b0ed9f02940ba1d879ef33578f7b1b0b337323"
 "checksum fuchsia-zircon 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "bd510087c325af53ba24f3be8f1c081b0982319adcb8b03cad764512923ccc19"
 "checksum fuchsia-zircon-sys 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "08b3a6f13ad6b96572b53ce7af74543132f1a7055ccceb6d073dd36c54481859"
 "checksum gcc 0.3.54 (registry+https://github.com/rust-lang/crates.io-index)" = "5e33ec290da0d127825013597dbdfc28bee4964690c7ce1166cbc2a7bd08b1bb"
 "checksum libc 0.2.34 (registry+https://github.com/rust-lang/crates.io-index)" = "36fbc8a8929c632868295d0178dd8f63fc423fd7537ad0738372bd010b3ac9b0"
-"checksum log 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 "checksum log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "89f010e843f2b1a31dbd316b3b8d443758bc634bed37aabade59c686d644e0a2"
 "checksum maplit 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5ed95049d40b8a1a7691adbabca028ad481f7e6a2921ce4846e1ee168b4e4ca5"
 "checksum ncurses 5.88.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2d57057c7a5508a3d3ced298779928e0022bd4e54d1d85e8809dfb0d16c65ad9"
@@ -234,3 +238,4 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum toml 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)" = "a7540f4ffc193e0d3c94121edb19b055670d369f77d5804db11ae053a45b6e7e"
 "checksum unicode-segmentation 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a8083c594e02b8ae1654ae26f0ade5158b119bd88ad0e8227a5d8fcd72407946"
 "checksum unicode-width 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "bf3a113775714a22dcb774d8ea3655c53a32debae63a063acc00a91cc586245f"
+"checksum xi-unicode 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "12ea8eda4b1eb72f02d148402e23832d56a33f55d8c1b2d5bcdde91d79d47cb1"
