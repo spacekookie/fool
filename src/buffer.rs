@@ -3,17 +3,16 @@
 //! Is aware of cursor position and updates the rendered text according
 //! to the user actions taken
 
-use std::fmt;
-use std::fmt::Write;
+use std::fmt::{Write, Display, Formatter, Result};
 
 
-#[derive(Debug)]
+#[derive(Eq, PartialEq)]
 pub enum ChangeType {
     Added, Modified, Deleted
 }
 
-impl fmt::Display for ChangeType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Display for ChangeType {
+    fn fmt(&self, f: &mut Formatter) -> Result {
         return match self {
             &ChangeType::Added => write!(f, "Added"),
             &ChangeType::Modified => write!(f, "Modified"),
@@ -21,6 +20,7 @@ impl fmt::Display for ChangeType {
         };
     }
 }
+
 
 pub struct Buffer {
 
@@ -35,8 +35,6 @@ pub struct Buffer {
 
     /// All changes with the type that is being applied
     pub unstaged: Vec<(String, ChangeType)>,
-
-    // files: LinkedList<(String, BufferType)>,
 }
 
 
@@ -50,9 +48,21 @@ impl Buffer {
         };
     }
 
-    pub fn unstaged(&mut self, file: String) {
-
+    /// Add a file as untracked
+    /// 
+    /// If it is currently staged it will be removed from staged
+    /// If it is not staged, a new file is entered into the scope
+    pub fn untracked(&mut self, file: String) {
+        
+        /* If the file was staged before */
+        let (c, ctr) = contains(&self.staged, &file);
+        if c {
+            self.staged.remove(ctr);
+        }
+        
+        self.untracked.push(file);
     }
+
 
     pub fn render(&self) -> String{
         let mut text = String::new();
@@ -104,4 +114,15 @@ impl Buffer {
     // for (i, ch) in x.chars().enumerate() {
     //     write!(&mut res, "{} {}\n", i, ch).unwrap();
     // }
+}
+
+fn contains(vec: &Vec<(String, ChangeType)>, item: &String) -> (bool, usize) {
+    let mut ctr = 0;
+    for meh in vec {
+        if &meh.0 == item {
+            return (true, ctr);
+        }
+        ctr += 1;
+    }
+    return (false, ctr);
 }
