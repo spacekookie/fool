@@ -13,7 +13,7 @@ pub struct Git;
 impl Git {
 
     /// Parses git status --porcelain to fill the buffer
-    pub fn get_status() -> Vec<(ChangeType, String)> {
+    pub fn get_status() -> Vec<(ChangeType, String, bool)> {
 
         let mut vec = Vec::new();
 
@@ -46,16 +46,16 @@ impl Git {
 
             // Test if data is valid for staging stage
             let stage_file = match stage {
-                &'?' => Some(( ChangeType::Untracked, file.clone() )), // New file, not staged
-                &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification staged
-                &'A' => Some(( ChangeType::Added, file.clone() )), // Addition staged
+                &'?' => Some(( ChangeType::Untracked, file.clone(), false )), // New file, not staged
+                &'M' => Some(( ChangeType::Modified, file.clone(), true )), // Modification staged
+                &'A' => Some(( ChangeType::Added, file.clone(), true )), // Addition staged
                 _ => None
             };
 
             let modified_file = match state {
-                &'?' => Some(( ChangeType::Untracked, file.clone() )), // New file, untracked
-                &'D' => Some(( ChangeType::Deleted, file.clone() )), // Deletion
-                &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification
+                &'?' => Some(( ChangeType::Untracked, file.clone(), false )), // New file, untracked
+                &'D' => Some(( ChangeType::Deleted, file.clone(), false )), // Deletion
+                &'M' => Some(( ChangeType::Modified, file.clone(), false )), // Modification
                 _ => None
             };
 
