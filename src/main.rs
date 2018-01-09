@@ -104,6 +104,13 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
                         EditView::new()
                             .on_submit(move |siv, txt| {
                                 let mut buffer = b2.lock().unwrap();
+                                if txt == "" {
+                                    siv.pop_layer();
+                                    let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                                    update_from_git(&mut buffer, &mut tv);
+                                    return;    
+                                }
+
                                 Git::commit(txt);
                                 siv.pop_layer();
                                 let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
@@ -113,12 +120,18 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
                             .fixed_width(20),
                     )
                     .button("Ok", move |siv| {
-                        let msg =
-                            siv.call_on_id("commit", |view: &mut EditView| view.get_content())
-                                .unwrap();
-                        Git::commit(&*msg);
                         let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
                         let mut bfo = b.lock().unwrap();
+                        let msg =
+                            siv.call_on_id("commit", |view: &mut EditView| view.get_content()).unwrap();
+                            if *msg == "".to_owned() {
+                                siv.pop_layer();
+                                let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                                update_from_git(&mut bfo, &mut tv);
+                                return;    
+                            }
+
+                        Git::commit(&*msg);
                         update_from_git(&mut bfo, &mut tv);
                         siv.pop_layer();
                     }),
@@ -150,9 +163,13 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
 pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
     buffer.clear();
-    buffer.set_remote( &format!("Remote: \t{}",    Git::get_remote()) );
-    buffer.set_local( &format!("Local:  \t{} {}", Git::get_branch_data().0, Git::get_directory()) );
-    buffer.set_head( &format!("Head:   \t{}",    Git::get_branch_data().1) );
+    buffer.set_remote(&format!("Remote: \t{}", Git::get_remote()));
+    buffer.set_local(&format!(
+        "Local:  \t{} {}",
+        Git::get_branch_data().0,
+        Git::get_directory()
+    ));
+    buffer.set_head(&format!("Head:   \t{}", Git::get_branch_data().1));
 
     for (t, f, s) in Git::get_status() {
 
