@@ -130,19 +130,31 @@ impl Git {
     pub fn get_branch_data() -> (String, String) {
         // * master ad7457a [ahead 6] "Changing frame sizes"
         let cool_string = String::from(run_utility("git branch -v").trim());
-        let mut vector = cool_string.split(" ").collect::<Vec<&str>>();
-        vector.remove(0);
+        let lines = cool_string.split("\n").collect::<Vec<&str>>();
 
-        let branch = vector[0];
-        vector.remove(0);
-        let mut commit = String::new();
+        for line in lines {
+            if line.starts_with('*') {
+                let mut vector = line.split(" ").collect::<Vec<&str>>();
+                vector.remove(0);
 
-        for word in &vector {
-            commit.push_str(word);
-            commit.push(' ');
+                let branch = vector[0];
+                vector.remove(0);
+                let mut commit = String::new();
+
+                for word in &vector {
+                    if word == &"" {
+                        continue;
+                    }
+
+                    commit.push_str(word);
+                    commit.push(' ');
+                }
+
+                return (String::from(branch), commit);
+            }
         }
 
-        return (String::from(branch), commit);
+        return ("".to_owned(), "".to_owned());
     }
 }
 
