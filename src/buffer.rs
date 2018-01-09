@@ -25,7 +25,10 @@ pub enum ChangeType {
     // An error type
     None,
 
-    // By default untracked or staged
+    // A new, unstaged file
+    Untracked,
+
+    // A new, staged file
     Added,
 
     // Either tracked or staged
@@ -38,10 +41,10 @@ pub enum ChangeType {
 impl Display for ChangeType {
     fn fmt(&self, f: &mut Formatter) -> Result {
         return match self {
-            &ChangeType::None => write!(f, "NONE <Invalid>"),
             &ChangeType::Added => write!(f, "Added"),
             &ChangeType::Modified => write!(f, "Modified"),
             &ChangeType::Deleted => write!(f, "Deleted"),
+            _ => write!(f, "NONE <Invalid>"),
         };
     }
 }
