@@ -38,18 +38,38 @@ fn register_callbacks(siv: &mut Cursive) {
 
 fn main() {
 
-    Git::get_status();
-    return;
+    let mut b = Buffer::new();
+    for (t, f, s) in Git::get_status() {
+        // println!("{} {} {}", t, f, s);
+
+        if s {
+            b.stage(f, t);
+        } else {
+            match t {
+                ChangeType::Untracked => b.add_untracked(f),
+                _ => b.add_unstaged(f, t),
+            }
+        }
+    }
+
+    // return;
+    // Deleted log.err false
+    // Modified src/buffer.rs false
+    // Modified src/git.rs false
+    // Modified src/main.rs true
+    // Modified src/main.rs false
+    // Untracked .vscode/ false
+    // Untracked meow false
+
 
     let mut siv = Cursive::new();
     siv.load_theme_file("assets/style.toml").unwrap();
 
-    let mut b = Buffer::new();
-    b.add_untracked("src/control.rs".to_owned());
-    b.add_unstaged("log.err".to_owned(), ChangeType::Deleted);
-    b.add_unstaged("src/buffer.rs".to_owned(), ChangeType::Modified);
-    b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
-    b.stage("src/main.rs".to_owned(), ChangeType::Modified);
+    // b.add_untracked("src/control.rs".to_owned());
+    // b.add_unstaged("log.err".to_owned(), ChangeType::Deleted);
+    // b.add_unstaged("src/buffer.rs".to_owned(), ChangeType::Modified);
+    // b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
+    // b.stage("src/main.rs".to_owned(), ChangeType::Modified);
     let buffer = Arc::new(Mutex::new(b));
 
     {

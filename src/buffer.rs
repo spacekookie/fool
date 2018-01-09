@@ -44,6 +44,7 @@ impl Display for ChangeType {
             &ChangeType::Added => write!(f, "Added"),
             &ChangeType::Modified => write!(f, "Modified"),
             &ChangeType::Deleted => write!(f, "Deleted"),
+            &ChangeType::Untracked => write!(f, "Untracked"),
             _ => write!(f, "NONE <Invalid>"),
         };
     }
@@ -120,17 +121,18 @@ impl Buffer {
     pub fn add_unstaged(&mut self, file: String, t: ChangeType) {
 
         /* Check the file is actually staged */
-        let (staged, ctr) = contains(&self.staged, &file);
-        if staged {
+        // let (staged, ctr) = contains(&self.staged, &file);
+        // if staged {
 
-            /* Decides wether it's untracked or unstaged */
-            let _type = get_type(&self.unstaged, &file).unwrap();
-            if _type != t {
-                panic!("Invalid change type!");
-            }
+        //     /* Decides wether it's untracked or unstaged */
+        //     println!("{}", t);
+        //     let _type = get_type(&self.unstaged, &file).unwrap();
+        //     if _type != t {
+        //         panic!("Invalid change type!");
+        //     }
 
-            self.staged.remove(ctr);
-        }
+        //     self.staged.remove(ctr);
+        // }
 
         /* If added => untracked, if modified or deleted => just unstaged */
         match t {
