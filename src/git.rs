@@ -104,7 +104,7 @@ impl Git {
         Command::new("git")
             .arg(format!("commit"))
             .arg("-m")
-            .arg(format!("\"{}\"", msg))
+            .arg(format!("{}", msg))
             .output()
             .ok();
     }
