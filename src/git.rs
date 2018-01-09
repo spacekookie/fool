@@ -108,8 +108,6 @@ impl Git {
             .ok();
     }
 
-    pub fn commit_ammend() {}
-
     pub fn push() {
         Command::new("git").arg("push").output().ok();
    }
