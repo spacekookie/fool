@@ -7,16 +7,13 @@ use buffer::{Buffer, ChangeType};
 use cursive::Cursive;
 use cursive::event::{Event, Key};
 use cursive::traits::*;
-use cursive::views::{Dialog, Panel, OnEventView, TextArea, TextView, BoxView, Menubar};
+use cursive::views::*;
 use cursive::menu::MenuTree;
 use cursive::align::*;
-
 use cursive::theme::*;
 
-fn register_callbacks(siv: &mut Cursive) {
 
-    // siv.add_global_callback(Key::Up, |_| eprintln!("ARROW UP"));
-    // siv.add_global_callback(Key::Down, |_| eprintln!("ARROW DOWN"));
+fn register_callbacks(siv: &mut Cursive) {
 
     siv.add_global_callback('s', |_| {
         eprintln!("Staging a file");
@@ -39,52 +36,99 @@ fn register_callbacks(siv: &mut Cursive) {
     });
 }
 
+use std::sync::{Mutex, Arc};
+use std::thread;
+
 fn main() {
+    // let counter = Arc::new(Mutex::new(0));
+    // let mut handles = vec![];
+
+    // for _ in 0..10 {
+    //     let counter = Arc::clone(&counter);
+    //     let handle = thread::spawn(move || {
+    //         let mut num = counter.lock().unwrap();
+
+    //         *num += 1;
+    //     });
+    //     handles.push(handle);
+    // }
+
+    // for handle in handles {
+    //     handle.join().unwrap();
+    // }
+
     let mut siv = Cursive::new();
     siv.load_theme_file("assets/style.toml").unwrap();
 
-    // The main dialog will just have a textarea.
-    // Its size expand automatically with the content.
-    // siv.add_layer(
-    //     Dialog::new()
-    //         .title("Describe your issue")
-    //         .padding((1, 1, 1, 0))
-    //         .content(TextArea::new().with_id("text"))
-    //         .button("Ok", Cursive::quit),
-    // );
-
-    let mut b = buffer::Buffer::new();
+    let mut b = Buffer::new();
     b.add_untracked("src/control.rs".to_owned());
     b.add_unstaged("log.err".to_owned(), ChangeType::Deleted);
     b.add_unstaged("src/buffer.rs".to_owned(), ChangeType::Modified);
     b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
     b.stage("src/main.rs".to_owned(), ChangeType::Modified);
+    let buffer = Arc::new(Mutex::new(b));
+
+    // let mut text_view = TextView::new(buffer.lock().unwrap().render());
+    // text_view.set_scrollable(false);
+    // let text_buffer = Arc::new(Mutex::new(text_view));
+    //     let t = Arc::clone(&text_buffer);
+
+    {
+        let b = Arc::clone(&buffer);
+        siv.add_global_callback(Key::Up, move |siv| {
+            let mut buffer = b.lock().unwrap();
+            buffer.move_up();
+            eprintln!("Moving up...");
 
 
-    // " Local:    master ~/Projects/code/fool
-    //  Head:     8ef7c41 Miep
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            (&mut *tv).set_content(buffer.render());
+        });
+    }
+
+    {
+        let b = Arc::clone(&buffer);
+        siv.add_global_callback(Key::Down, move |siv| {
+            let mut buffer = b.lock().unwrap();
+            buffer.move_down();
+            eprintln!("Moving down...");
+
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            (&mut *tv).set_content(buffer.render());
+        });
+    }
 
 
-    //  Changes:
-    // ==> Modified   Cargo.lock
-    //     Modified   Cargo.toml
-    //     Modified   src/main.rs
+    // // " Local:    master ~/Projects/code/fool
+    // //  Head:     8ef7c41 Miep
 
-    //  # Cheat Sheet
-    //  #    s = stage file/section, S = stage all unstaged files
-    //  #    c = commit, C = commit -a (add unstaged)
-    //  #    P = push to upstream
-    //     "
 
-    let mut text_view = TextView::new(b.render());
-    text_view.set_scrollable(false);
+    // //  Changes:
+    // // ==> Modified   Cargo.lock
+    // //     Modified   Cargo.toml
+    // //     Modified   src/main.rs
 
-    let size = siv.screen_size();
-    let view = BoxView::with_fixed_size((size.x - 8, size.y - 4), Panel::new(text_view));
-    siv.add_layer(view);
+    // //  # Cheat Sheet
+    // //  #    s = stage file/section, S = stage all unstaged files
+    // //  #    c = commit, C = commit -a (add unstaged)
+    // //  #    P = push to upstream
+    // //     "
 
     /* Register keybinding callbacks */
     register_callbacks(&mut siv);
+    let size = siv.screen_size();
+    
+    {
+        let b = Arc::clone(&buffer);
+        let mut text_view = TextView::new(b.lock().unwrap().render()); //with_id("text_area");
+        text_view.set_scrollable(false);
+        let view = BoxView::with_fixed_size(
+            (size.x - 8, size.y - 4),
+            Panel::new(text_view.with_id("text_area")),
+        );
+
+        siv.add_layer(view);
+    }
 
     // The menubar is a list of (label, menu tree) pairs.
     siv.menubar()
@@ -92,41 +136,7 @@ fn main() {
         .add_subtree("Quit", MenuTree::new());
 
     siv.set_autohide_menu(false);
-    siv.add_global_callback(Key::Esc, |s| s.select_menubar());
-    
+    siv.add_global_callback('Q', |s| s.quit());
+
     siv.run();
 }
-
-// Dialog::new()
-//     .title("Changes in the repo")
-//     .padding((1, 1, 1, 1))
-//     .h_align(HAlign::Center)
-//     .content(TextArea::new().content("--------------------------------------------------------"))
-//     .button("Ok", Cursive::quit),
-
-// fn main() {
-//     // Read some long text from a file.
-//     let content = "Leverage agile frameworks to provide a robust
-//     synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further
-// the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.";
-//     let mut siv = Cursive::new();
-
-//     // We can quit by pressing q
-//     siv.add_global_callback('q', |s| s.quit());
-
-//     // The text is too long to fit on a line, so the view will wrap lines,
-//     // and will adapt to the terminal size.
-//     siv.add_layer(
-//         Dialog::around(Panel::new(TextView::new(content)))
-//             .h_align(HAlign::Center)
-//             .button("Quit", |s| s.quit())
-//             .full_screen(),
-//     );
-//     // Show a popup on top of the view.
-//     siv.add_layer(Dialog::info(
-//         "Try resizing the terminal!\n(Press 'q' to \
-//          quit when you're done.)",
-//     ));
-
-//     siv.run();
-// }
