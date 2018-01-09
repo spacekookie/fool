@@ -64,9 +64,13 @@ pub struct Buffer {
     /// All changes with the type that is being applied
     unstaged: Vec<(String, ChangeType)>,
 
+    /// Data about stuff
     remote: String,
     local: String,
     head: String,
+
+    /// Height
+    height: usize,
 }
 
 
@@ -80,6 +84,7 @@ impl Buffer {
             remote: String::new(),
             local: String::new(),
             head: String::new(),
+            height: 0,
         };
     }
 
