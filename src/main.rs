@@ -59,7 +59,6 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback('u', move |siv| {
             let mut buffer = b.lock().unwrap();
-            eprintln!("{}", &buffer.get_selection().0);
             Git::unstage(&buffer.get_selection().0);
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             update_from_git(&mut buffer, &mut tv);
@@ -150,11 +149,17 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
     {
         let b = Arc::clone(buffer);
-        siv.add_global_callback('p', move |siv| {
+        siv.add_global_callback('P', move |siv| {
             let mut buffer = b.lock().unwrap();
             Git::push();
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             update_from_git(&mut buffer, &mut tv);
+
+            siv.add_layer(
+                Dialog::around(TextView::new("Successfully Pushed"))
+                    .title("Status")
+                    .button("Ok", |s| s.pop_layer()),
+            );
         });
     }
 }
@@ -187,6 +192,11 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
 
 
 fn main() {
+    // for (t, f, s) in Git::get_status() {
+    //     println!("{} {} {}", t, f, s);
+    // }
+
+    // return;
 
     let buffer = Arc::new(Mutex::new(Buffer::new()));
     let mut siv = Cursive::new();
@@ -196,6 +206,7 @@ fn main() {
     register_callbacks(&mut siv, &buffer);
     let size = siv.screen_size();
 
+    println!("Test 2");
     {
         let b = Arc::clone(&buffer);
         let mut text_view = TextView::new("<PLACEHOLDER>"); //with_id("text_area");
