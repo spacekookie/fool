@@ -129,6 +129,18 @@ impl Buffer {
         }
     }
 
+    pub fn move_up(&mut self) {
+        if self.position > 0 {
+            self.position -= 1;
+        }
+    }
+
+    pub fn move_down(&mut self) {
+        if self.position < 555 { // FIXME: Get actual length :P
+            self.position += 1;
+        }
+    }
+
     pub fn render(&self) -> String {
         let mut text = String::new();
 
@@ -140,10 +152,18 @@ impl Buffer {
         /* Some space */
         write!(&mut text, "\n").ok();
 
+        let mut current_line = 0;
+
         /* First add all untracked files */
         write!(&mut text, "Untracked files: \n").ok();
         for f in &self.untracked {
-            write!(&mut text, "  {}\n", &f.0).ok();
+            if current_line == self.position {
+                write!(&mut text, "{} {}\n", CURSOR_CHAR, &f.0).ok();
+            } else {
+                write!(&mut text, "  {}\n", &f.0).ok();
+            }
+
+            current_line += 1;
         }
 
         /* Some space */
@@ -152,7 +172,13 @@ impl Buffer {
         /* Then add all unstaged */
         write!(&mut text, "Changes: \n").ok();
         for f in &self.unstaged {
-            write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
+            if current_line == self.position {
+                write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
+            } else {
+                write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
+            }
+
+            current_line += 1;
         }
 
         /* Some space */
@@ -161,7 +187,13 @@ impl Buffer {
         /* Finally everything staged */
         write!(&mut text, "Staged Changes: \n").ok();
         for f in &self.staged {
-            write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
+            if current_line == self.position {
+                write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
+            } else {
+                write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
+            }
+
+            current_line += 1;
         }
 
         /* Some more space */
