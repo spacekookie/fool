@@ -66,46 +66,6 @@ impl Git {
             if modified_file.is_some() {
                 vec.push(modified_file.unwrap());
             }
-
-            // /* Start consuming the string until we hit a ctl character */
-            // for c in line.chars() {
-
-            //     /* Means nothing was staged */
-            //     if line.starts_with(' ') {
-            //         staged = false;
-            //         if c == ' ' {
-            //             ctr += 1;
-            //             continue;
-            //         }
-            //     }
-
-            //     ctrl = match c {
-            //        'M' => ChangeType::Modified,
-            //        'D' => ChangeType::Deleted,
-            //        'A' => ChangeType::Added,
-            //        '?' =>
-            //            if second {
-            //                 second = false;
-            //                 ctr += 1;
-            //                 ChangeType::Added
-            //            } else {
-            //                 second = true;
-            //                 continue;
-            //            }
-            //         _ => continue,
-            //     }
-            // }
-
-            // if ctrl == ChangeType::None {
-            //     continue;
-            // }
-
-            /* Next up read the rest of the string */
-            // let mut meh: &str = &line[ctr..].trim();
-            // let file = String::from(meh);
-
-            // println!("Staged: {} | {} {}", staged, ctrl, file);
-            // vec.push((file, ctrl, staged));
         }
 
         return vec;
@@ -152,4 +112,54 @@ impl Git {
     pub fn push() {
         Command::new("git").arg("push").output().ok();
    }
+
+    pub fn get_remote() -> String {
+        let remote = String::from(run_utility("git remote show").trim());
+        let url =  run_utility(&format!("git remote get-url {}", &remote));
+        return format!("{} @ {}", remote.trim(), url.trim());
+    }
+
+    pub fn get_directory() -> String {
+        let child = Command::new("bash").stdout(Stdio::piped()).arg("-c").arg("dirs +0").spawn().ok().unwrap();
+        let output = &mut child.stdout.unwrap();
+        let mut text = String::new();
+        output.read_to_string(&mut text).ok();
+        return String::from(text.trim());
+    }
+
+    pub fn get_branch_data() -> (String, String) {
+        // * master ad7457a [ahead 6] "Changing frame sizes"
+        let cool_string = String::from(run_utility("git branch -v").trim());
+        let mut vector = cool_string.split(" ").collect::<Vec<&str>>();
+        vector.remove(0);
+
+        let branch = vector[0];
+        vector.remove(0);
+        let mut commit = String::new();
+
+        for word in &vector {
+            commit.push_str(word);
+            commit.push(' ');
+        }
+
+        return (String::from(branch), commit);
+    }
+}
+
+fn run_utility(command: &str) -> String {
+    
+    let mut array = command.split(" ");
+    let mut res = Command::new(String::from(array.nth(0).unwrap()));
+    res.stdout(Stdio::piped());
+    let vec = array.collect::<Vec<&str>>();
+
+    for arg in vec {
+        res.arg(arg);
+    }
+    let child = res.spawn().ok().unwrap();
+
+    let output = &mut child.stdout.unwrap();
+    let mut text = String::new();
+    output.read_to_string(&mut text).ok();
+    return text;
 }
