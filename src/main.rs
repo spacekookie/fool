@@ -149,15 +149,15 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         }
     }
 
-
-
-    siv.add_global_callback('C', |siv| {
-        eprintln!("Ammend committing");
-    });
-
-    siv.add_global_callback('p', |_| {
-        eprintln!("Pushing to origin");
-    });
+    {
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('p', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::push();
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
 }
 
 
@@ -188,15 +188,6 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
 
 
 fn main() {
-    // println!("{:?}", Git::get_branch_data());
-    // println!("{}", &format!("Remote: \t{}", Git::get_remote()));
-    // println!("{}", &format!(
-    //     "Local:  \t{} {}",
-    //     Git::get_branch_data().0,
-    //     Git::get_directory()
-    // ));
-    // println!("{}", &format!("Head:   \t{}", Git::get_branch_data().1));
-    // return;
 
     let buffer = Arc::new(Mutex::new(Buffer::new()));
     let mut siv = Cursive::new();
