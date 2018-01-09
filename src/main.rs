@@ -16,81 +16,16 @@ use cursive::traits::*;
 use cursive::views::*;
 
 
-fn register_callbacks(siv: &mut Cursive) {
-
-    siv.add_global_callback('S', |_| {
-        eprintln!("Staging ALL the file");
-    });
-
-    siv.add_global_callback('c', |_| {
-        eprintln!("Creating a commit");
-    });
-
-    siv.add_global_callback('C', |_| {
-        eprintln!("Ammend committing");
-    });
-
-    siv.add_global_callback('p', |_| {
-        eprintln!("Pushing to origin");
-    });
+fn make_git_commit(_: &mut Cursive, msg: &str) {
+    Git::commit(msg);
 }
 
 
-fn main() {
-
-    let mut b = Buffer::new();
-    for (t, f, s) in Git::get_status() {
-        // println!("{} {} {}", t, f, s);
-
-        if s {
-            b.stage(f, t);
-        } else {
-            match t {
-                ChangeType::Untracked => b.add_untracked(f),
-                _ => b.add_unstaged(f, t),
-            }
-        }
-    }
-
-    // return;
-    // Deleted log.err false
-    // Modified src/buffer.rs false
-    // Modified src/git.rs false
-    // Modified src/main.rs true
-    // Modified src/main.rs false
-    // Untracked .vscode/ false
-    // Untracked meow false
-
-
-    let mut siv = Cursive::new();
-    siv.load_theme_file("assets/style.toml").unwrap();
-
-    // b.add_untracked("src/control.rs".to_owned());
-    // b.add_unstaged("log.err".to_owned(), ChangeType::Deleted);
-    // b.add_unstaged("src/buffer.rs".to_owned(), ChangeType::Modified);
-    // b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
-    // b.stage("src/main.rs".to_owned(), ChangeType::Modified);
-    let buffer = Arc::new(Mutex::new(b));
+fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
     {
-        let b = Arc::clone(&buffer);
-        siv.add_global_callback('o', move |_| {
-            let buffer = b.lock().unwrap();
-            eprintln!("{:?}", buffer.get_selection());
-        });
-    }
-
-    {
-        let b = Arc::clone(&buffer);
-        siv.add_global_callback('s', move |_| {
-            let buffer = b.lock().unwrap();
-            Git::stage(&buffer.get_selection().0);
-            // eprintln!("{:?}", buffer.get_selection());
-        });
-    }
-
-    {
-        let b = Arc::clone(&buffer);
+        // ARROW UP
+        let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Up, move |siv| {
             let mut buffer = b.lock().unwrap();
             buffer.move_up();
@@ -101,7 +36,8 @@ fn main() {
     }
 
     {
-        let b = Arc::clone(&buffer);
+        // ARROW DOWN
+        let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Down, move |siv| {
             let mut buffer = b.lock().unwrap();
             buffer.move_down();
@@ -111,13 +47,138 @@ fn main() {
         });
     }
 
+    {
+        // REMOVE THIS
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('o', move |siv| {
+            let buffer = b.lock().unwrap();
+            eprintln!("{:?}", buffer.get_selection());
+        });
+    }
+
+    {
+        // STAGE A SINGLE FILE
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('s', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::stage(&buffer.get_selection().0);
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
+
+    {
+        // UNSTAGE A SINGLE FILE
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('u', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::unstage(&buffer.get_selection().0);
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
+
+
+    {
+        // STAGE ALL
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('S', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::stage_all();
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
+
+    {
+        // UNSTAGE ALL
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('U', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::unstage_all();
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
+
+
+    {
+        // MAKING A COMMIT
+        let b = Arc::clone(buffer);
+        siv.add_global_callback('c', |siv| {
+            siv.add_layer(
+                Dialog::new()
+                    .title("Enter a commit message")
+                    .padding((1, 1, 1, 0))
+                    .content(EditView::new()
+                            .on_submit(make_git_commit)
+                            .with_id("git_message")
+                            .fixed_width(20))
+                    .button("Ok", |s| {
+                        let dialog_msg =
+                            s.call_on_id("git_message", |view: &mut EditView| view.get_content())
+                                .unwrap();
+                        Git::commit(&*dialog_msg);
+                    }),
+            );
+
+            // Dialog::around(TextArea::new())
+            //         .button("Ok", move |s| msg = );
+        });
+
+        siv.add_global_callback('U', move |siv| {
+            let mut buffer = b.lock().unwrap();
+            Git::unstage_all();
+            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+            update_from_git(&mut buffer, &mut tv);
+        });
+    }
+
+
+
+    siv.add_global_callback('C', |siv| {
+        eprintln!("Ammend committing");
+    });
+
+    siv.add_global_callback('p', |_| {
+        eprintln!("Pushing to origin");
+    });
+}
+
+
+pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
+    buffer.clear();
+    for (t, f, s) in Git::get_status() {
+
+        if s {
+            buffer.stage(f, t);
+        } else {
+            match t {
+                ChangeType::Untracked => buffer.add_untracked(f),
+                _ => buffer.add_unstaged(f, t),
+            }
+        }
+    }
+
+    tv.set_content(buffer.render());
+}
+
+
+fn main() {
+    let buffer = Arc::new(Mutex::new(Buffer::new()));
+
+    let mut siv = Cursive::new();
+    siv.load_theme_file("assets/style.toml").unwrap();
+
     /* Register keybinding callbacks */
-    register_callbacks(&mut siv);
+    register_callbacks(&mut siv, &buffer);
     let size = siv.screen_size();
-    
+
     {
         let b = Arc::clone(&buffer);
-        let mut text_view = TextView::new(b.lock().unwrap().render()); //with_id("text_area");
+        let mut text_view = TextView::new("<PLACEHOLDER>"); //with_id("text_area");
+        update_from_git(&mut buffer.lock().unwrap(), &mut text_view);
+
         text_view.set_scrollable(false);
         let view = BoxView::with_fixed_size(
             (size.x - 8, size.y - 4),
