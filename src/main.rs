@@ -183,7 +183,7 @@ fn main() {
 
         text_view.set_scrollable(false);
         let view = BoxView::with_fixed_size(
-            (size.x - 8, size.y - 4),
+            (size.x - 2, size.y - 2),
             Panel::new(text_view.with_id("text_area")),
         );
 
