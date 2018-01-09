@@ -120,13 +120,20 @@ impl Git {
     }
 
     pub fn stage_all() {
-        Command::new("git").arg("add -A").output().ok();
+        Command::new("git").arg("add").arg("-A").output().ok();
     }
 
     pub fn unstage(file: &str) {
         Command::new("git")
             .arg("reset")
             .arg(format!("{}", file))
+            .output()
+            .ok();
+    }
+
+    pub fn unstage_all() {
+        Command::new("git")
+            .arg("reset")
             .output()
             .ok();
     }

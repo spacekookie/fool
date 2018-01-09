@@ -16,8 +16,9 @@ use cursive::traits::*;
 use cursive::views::*;
 
 
-fn make_git_commit(_: &mut Cursive, msg: &str) {
+fn make_git_commit(siv: &mut Cursive, msg: &str) {
     Git::commit(msg);
+    siv.pop_layer();
 }
 
 
@@ -110,15 +111,18 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
                 Dialog::new()
                     .title("Enter a commit message")
                     .padding((1, 1, 1, 0))
-                    .content(EditView::new()
+                    .content(
+                        EditView::new()
                             .on_submit(make_git_commit)
-                            .with_id("git_message")
-                            .fixed_width(20))
-                    .button("Ok", |s| {
-                        let dialog_msg =
-                            s.call_on_id("git_message", |view: &mut EditView| view.get_content())
+                            .with_id("commit")
+                            .fixed_width(20),
+                    )
+                    .button("Ok", |siv| {
+                        let msg =
+                            siv.call_on_id("commit", |view: &mut EditView| view.get_content())
                                 .unwrap();
-                        Git::commit(&*dialog_msg);
+                        Git::commit(&*msg);
+                        siv.pop_layer();
                     }),
             );
 

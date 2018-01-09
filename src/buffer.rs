@@ -141,6 +141,12 @@ impl Buffer {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.unstaged.clear();
+        self.untracked.clear();
+        self.staged.clear();
+    }
+
     pub fn move_up(&mut self) {
         if self.position > 0 {
             self.position -= 1;
