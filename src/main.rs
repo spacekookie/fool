@@ -150,6 +150,10 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
 pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
     buffer.clear();
+    buffer.set_remote( &format!("Remote: \t{}",    Git::get_remote()) );
+    buffer.set_local( &format!("Local:  \t{} {}", Git::get_branch_data().0, Git::get_directory()) );
+    buffer.set_head( &format!("Head:   \t{}",    Git::get_branch_data().1) );
+
     for (t, f, s) in Git::get_status() {
 
         if s {
@@ -168,7 +172,6 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
 
 fn main() {
     let buffer = Arc::new(Mutex::new(Buffer::new()));
-
     let mut siv = Cursive::new();
     siv.load_theme_file("assets/style.toml").unwrap();
 

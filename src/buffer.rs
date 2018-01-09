@@ -63,6 +63,10 @@ pub struct Buffer {
 
     /// All changes with the type that is being applied
     unstaged: Vec<(String, ChangeType)>,
+
+    remote: String,
+    local: String,
+    head: String,
 }
 
 
@@ -73,6 +77,9 @@ impl Buffer {
             untracked: Vec::new(),
             staged: Vec::new(),
             unstaged: Vec::new(),
+            remote: String::new(),
+            local: String::new(),
+            head: String::new(),
         };
     }
 
@@ -141,6 +148,18 @@ impl Buffer {
         }
     }
 
+    pub  fn set_remote(&mut self, remote: &str) {
+        self.remote = String::from(remote);
+    }
+
+    pub fn set_head(&mut self, head: &str) {
+        self.head = String::from(head);
+    }
+
+    pub fn set_local(&mut self, local: &str) {
+        self.local = String::from(local);
+    }
+
     pub fn clear(&mut self) {
         self.unstaged.clear();
         self.untracked.clear();
@@ -180,9 +199,9 @@ impl Buffer {
         let mut text = String::new();
 
         /* Write information about the git repository */
-        // FIXME: Move thie header somewhere else?
-        write!(&mut text, "Local:    master ~/Projects/code/fool\n").ok();
-        write!(&mut text, "Head:     adcb557 Working on the buffer logic\n").ok();
+        write!(&mut text, "{}\n", &self.remote).ok();
+        write!(&mut text, "{}\n", &self.local).ok();
+        write!(&mut text, "{}\n", &self.head).ok();
 
         /* Some space */
         write!(&mut text, "\n").ok();
