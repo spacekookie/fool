@@ -11,7 +11,9 @@ use buffer::ChangeType;
 pub struct Git;
 impl Git {
     /// Parses git status --porcelain to fill the buffer
-    pub fn get_status() {
+    pub fn get_status() -> Vec<(String, ChangeType)> {
+
+        let mut vec = Vec::new();
 
         /* Makes *a lot* of assumptions */
         let res = Command::new("git")
@@ -64,8 +66,10 @@ impl Git {
             /* Next up read the rest of the string */
             let mut meh: &str = &line[ctr..].trim();          
             let file = String::from(meh);
-            println!("{} => '{}'", ctrl, file);
+            vec.push((file, ctrl));
         }
+
+        return vec;
     }
 
     pub fn stage(file: &str) {
