@@ -16,7 +16,6 @@ impl Git {
     pub fn get_status() -> Vec<(ChangeType, String)> {
 
         let mut vec = Vec::new();
-        println!("Meh!");
 
         /* Makes *a lot* of assumptions */
         let res = Command::new("git")
@@ -47,27 +46,26 @@ impl Git {
 
             // Test if data is valid for staging stage
             let stage_file = match stage {
-                &'?' => Some(( ChangeType::Added, file.clone() )), // New file, not staged
+                &'?' => Some(( ChangeType::Untracked, file.clone() )), // New file, not staged
                 &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification staged
                 &'A' => Some(( ChangeType::Added, file.clone() )), // Addition staged
                 _ => None
             };
 
             let modified_file = match state {
-                &'?' => Some(( ChangeType::Added, file.clone() )), // New file, untracked
+                &'?' => Some(( ChangeType::Untracked, file.clone() )), // New file, untracked
                 &'D' => Some(( ChangeType::Deleted, file.clone() )), // Deletion
                 &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification
                 _ => None
             };
 
-            if stage_file.is_some() {
+            if stage_file.is_some() && stage_file != modified_file {
                 vec.push(stage_file.unwrap());
             }
 
             if modified_file.is_some() {
                 vec.push(modified_file.unwrap());
             }
-            
 
             // /* Start consuming the string until we hit a ctl character */
             // for c in line.chars() {
