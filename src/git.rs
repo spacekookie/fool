@@ -13,10 +13,9 @@ pub struct Git;
 impl Git {
 
     /// Parses git status --porcelain to fill the buffer
-    pub fn get_status() -> Vec<(String, ChangeType)> {
+    pub fn get_status() -> Vec<(ChangeType, String)> {
 
         let mut vec = Vec::new();
-        // vec.push(("".to_owned(), ChangeType::Added));
         println!("Meh!");
 
         /* Makes *a lot* of assumptions */
@@ -61,10 +60,14 @@ impl Git {
                 _ => None
             };
 
-            println!("Stage > {:?}", stage_file);
-            println!("State > {:?}", modified_file);
-            println!("\n");
+            if stage_file.is_some() {
+                vec.push(stage_file.unwrap());
+            }
 
+            if modified_file.is_some() {
+                vec.push(modified_file.unwrap());
+            }
+            
 
             // /* Start consuming the string until we hit a ctl character */
             // for c in line.chars() {
