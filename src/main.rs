@@ -1,23 +1,22 @@
 extern crate cursive;
 
 mod buffer;
-
 use buffer::{Buffer, ChangeType};
 
+mod git;
+use git::Git;
+
+use std::sync::{Mutex, Arc};
+
+// Cursive UI includes
 use cursive::Cursive;
-use cursive::event::{Event, Key};
+use cursive::menu::MenuTree;
+use cursive::event::Key;
 use cursive::traits::*;
 use cursive::views::*;
-use cursive::menu::MenuTree;
-use cursive::align::*;
-use cursive::theme::*;
 
 
 fn register_callbacks(siv: &mut Cursive) {
-
-    siv.add_global_callback('s', |_| {
-        eprintln!("Staging a file");
-    });
 
     siv.add_global_callback('S', |_| {
         eprintln!("Staging ALL the file");
@@ -36,26 +35,8 @@ fn register_callbacks(siv: &mut Cursive) {
     });
 }
 
-use std::sync::{Mutex, Arc};
-use std::thread;
 
 fn main() {
-    // let counter = Arc::new(Mutex::new(0));
-    // let mut handles = vec![];
-
-    // for _ in 0..10 {
-    //     let counter = Arc::clone(&counter);
-    //     let handle = thread::spawn(move || {
-    //         let mut num = counter.lock().unwrap();
-
-    //         *num += 1;
-    //     });
-    //     handles.push(handle);
-    // }
-
-    // for handle in handles {
-    //     handle.join().unwrap();
-    // }
 
     let mut siv = Cursive::new();
     siv.load_theme_file("assets/style.toml").unwrap();
@@ -75,11 +56,26 @@ fn main() {
 
     {
         let b = Arc::clone(&buffer);
+        siv.add_global_callback('o', move |_| {
+            let buffer = b.lock().unwrap();
+            eprintln!("{:?}", buffer.get_selection());
+        });
+    }
+
+    {
+        let b = Arc::clone(&buffer);
+        siv.add_global_callback('s', move |_| {
+            let buffer = b.lock().unwrap();
+            Git::stage(&buffer.get_selection().0);
+            // eprintln!("{:?}", buffer.get_selection());
+        });
+    }
+
+    {
+        let b = Arc::clone(&buffer);
         siv.add_global_callback(Key::Up, move |siv| {
             let mut buffer = b.lock().unwrap();
             buffer.move_up();
-            eprintln!("Moving up...");
-
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             (&mut *tv).set_content(buffer.render());
@@ -91,7 +87,6 @@ fn main() {
         siv.add_global_callback(Key::Down, move |siv| {
             let mut buffer = b.lock().unwrap();
             buffer.move_down();
-            eprintln!("Moving down...");
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             (&mut *tv).set_content(buffer.render());
