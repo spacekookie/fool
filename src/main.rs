@@ -6,6 +6,8 @@ use buffer::{Buffer, ChangeType};
 mod git;
 use git::Git;
 
+mod theme;
+
 use std::sync::{Mutex, Arc};
 
 // Cursive UI includes
@@ -200,7 +202,7 @@ fn main() {
 
     let buffer = Arc::new(Mutex::new(Buffer::new()));
     let mut siv = Cursive::new();
-    siv.load_theme_file("assets/style.toml").unwrap();
+    siv.load_theme(theme::CURSIVE_THEME).ok();
 
     /* Register keybinding callbacks */
     register_callbacks(&mut siv, &buffer);
