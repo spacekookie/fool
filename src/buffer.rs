@@ -21,7 +21,6 @@ const HELP_FOOTER: &'static str = "# Cheat Sheet
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum ChangeType {
-    
     // An error type
     None,
 
@@ -132,20 +131,6 @@ impl Buffer {
     /// Add a file as unstaged
     pub fn add_unstaged(&mut self, file: String, t: ChangeType) {
 
-        /* Check the file is actually staged */
-        // let (staged, ctr) = contains(&self.staged, &file);
-        // if staged {
-
-        //     /* Decides wether it's untracked or unstaged */
-        //     println!("{}", t);
-        //     let _type = get_type(&self.unstaged, &file).unwrap();
-        //     if _type != t {
-        //         panic!("Invalid change type!");
-        //     }
-
-        //     self.staged.remove(ctr);
-        // }
-
         /* If added => untracked, if modified or deleted => just unstaged */
         match t {
             ChangeType::Added => self.untracked.push((file, t)),
@@ -153,7 +138,7 @@ impl Buffer {
         }
     }
 
-    pub  fn set_remote(&mut self, remote: &str) {
+    pub fn set_remote(&mut self, remote: &str) {
         self.remote = String::from(remote);
     }
 
@@ -172,18 +157,25 @@ impl Buffer {
     }
 
     pub fn move_up(&mut self) {
+        if self.len() == 0 {
+            return;
+        }
         if self.position > 0 {
             self.position -= 1;
         }
     }
 
     pub fn move_down(&mut self) {
-        if self.position < self.len()  as u64 - 1 { // FIXME: Why is the -1 required?
+        if self.len() == 0 {
+            return;
+        }
+        if self.position < self.len() as u64 - 1 {
+            // FIXME: Why is the -1 required?
             self.position += 1;
         }
     }
 
-    /// Get the currently selected file that can then be 
+    /// Get the currently selected file that can then be
     pub fn get_selection(&self) -> (String, ChangeType) {
         let untracked = self.untracked.len() as u64;
         let unstaged = self.unstaged.len() as u64;
@@ -260,12 +252,6 @@ impl Buffer {
 
         /* Add small cheat sheet */
         write!(&mut text, "{}", HELP_FOOTER).ok();
-        // write!(
-        //     &mut text,
-        //     "#    s = stage file/section, S = stage all unstaged files\n"
-        // ).ok();
-        // write!(&mut text, "#    c = commit, C = commit -a (add unstaged)\n").ok();
-        // write!(&mut text, "#    P = push to upstream\n").ok();
 
         return text;
     }

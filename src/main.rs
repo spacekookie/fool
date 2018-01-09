@@ -26,6 +26,7 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Up, move |siv| {
             let mut buffer = b.lock().unwrap();
+            eprintln!("Moving up...");
             buffer.move_up();
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
@@ -38,6 +39,7 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Down, move |siv| {
             let mut buffer = b.lock().unwrap();
+            eprintln!("Moving down...");
             buffer.move_down();
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
@@ -194,11 +196,6 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
 
 
 fn main() {
-    // for (t, f, s) in Git::get_status() {
-    //     println!("{} {} {}", t, f, s);
-    // }
-
-    // return;
 
     let buffer = Arc::new(Mutex::new(Buffer::new()));
     let mut siv = Cursive::new();
