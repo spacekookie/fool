@@ -38,6 +38,9 @@ fn register_callbacks(siv: &mut Cursive) {
 
 fn main() {
 
+    Git::get_status();
+    return;
+
     let mut siv = Cursive::new();
     siv.load_theme_file("assets/style.toml").unwrap();
 
@@ -48,11 +51,6 @@ fn main() {
     b.add_unstaged("src/test.rs".to_owned(), ChangeType::Added);
     b.stage("src/main.rs".to_owned(), ChangeType::Modified);
     let buffer = Arc::new(Mutex::new(b));
-
-    // let mut text_view = TextView::new(buffer.lock().unwrap().render());
-    // text_view.set_scrollable(false);
-    // let text_buffer = Arc::new(Mutex::new(text_view));
-    //     let t = Arc::clone(&text_buffer);
 
     {
         let b = Arc::clone(&buffer);
@@ -93,22 +91,6 @@ fn main() {
         });
     }
 
-
-    // // " Local:    master ~/Projects/code/fool
-    // //  Head:     8ef7c41 Miep
-
-
-    // //  Changes:
-    // // ==> Modified   Cargo.lock
-    // //     Modified   Cargo.toml
-    // //     Modified   src/main.rs
-
-    // //  # Cheat Sheet
-    // //  #    s = stage file/section, S = stage all unstaged files
-    // //  #    c = commit, C = commit -a (add unstaged)
-    // //  #    P = push to upstream
-    // //     "
-
     /* Register keybinding callbacks */
     register_callbacks(&mut siv);
     let size = siv.screen_size();
@@ -135,3 +117,20 @@ fn main() {
 
     siv.run();
 }
+
+
+// This should be the header
+// " Local:    master ~/Projects/code/fool
+//  Head:     8ef7c41 Miep
+
+
+//  Changes:
+// ==> Modified   Cargo.lock
+//     Modified   Cargo.toml
+//     Modified   src/main.rs
+
+//  # Cheat Sheet
+//  #    s = stage file/section, S = stage all unstaged files
+//  #    c = commit, C = commit -a (add unstaged)
+//  #    P = push to upstream
+//     "

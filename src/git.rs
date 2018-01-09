@@ -8,12 +8,16 @@ use std::io::Read;
 
 use buffer::ChangeType;
 
+/// Some git functions (stateless)
 pub struct Git;
 impl Git {
+
     /// Parses git status --porcelain to fill the buffer
     pub fn get_status() -> Vec<(String, ChangeType)> {
 
         let mut vec = Vec::new();
+        // vec.push(("".to_owned(), ChangeType::Added));
+        println!("Meh!");
 
         /* Makes *a lot* of assumptions */
         let res = Command::new("git")
@@ -23,6 +27,7 @@ impl Git {
             .spawn()
             .ok()
             .unwrap();
+
         let output = &mut res.stdout.unwrap();
         let mut text = String::new();
         output.read_to_string(&mut text).ok();
@@ -31,42 +36,75 @@ impl Git {
         let array = text.split("\n");
         for line in array {
 
-            let mut ctr = 0;
-            let mut ctrl: ChangeType = ChangeType::None;
-            let mut second = false;
+            /* Check if valid */
+            match &line.chars().nth(1) {
+                &None => continue,
+                _ => {}
+            };
 
-            /* Start consuming the string until we hit a ctl character */
-            for c in line.chars() {
-                if c == ' ' {
-                    ctr += 1;
-                    continue;
-                }
+            let stage = &line.chars().nth(0).unwrap();
+            let state = &line.chars().nth(1).unwrap();
+            let file = String::from(line[2..].trim());
 
-                ctrl = match c {
-                   'M' => ChangeType::Modified,
-                   'D' => ChangeType::Deleted,
-                   'A' => ChangeType::Added,
-                   '?' => 
-                       if second {
-                            second = false;
-                            ctr += 1;
-                            ChangeType::Added
-                       } else {
-                            second = true;
-                            continue;
-                       }
-                    _ => continue,
-                }
-            }
+            // Test if data is valid for staging stage
+            let stage_file = match stage {
+                &'?' => Some(( ChangeType::Added, file.clone() )), // New file, not staged
+                &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification staged
+                &'A' => Some(( ChangeType::Added, file.clone() )), // Addition staged
+                _ => None
+            };
 
-            if ctrl == ChangeType::None {
-                continue;
-            }
+            let modified_file = match state {
+                &'?' => Some(( ChangeType::Added, file.clone() )), // New file, untracked
+                &'D' => Some(( ChangeType::Deleted, file.clone() )), // Deletion
+                &'M' => Some(( ChangeType::Modified, file.clone() )), // Modification
+                _ => None
+            };
+
+            println!("Stage > {:?}", stage_file);
+            println!("State > {:?}", modified_file);
+            println!("\n");
+
+
+            // /* Start consuming the string until we hit a ctl character */
+            // for c in line.chars() {
+
+            //     /* Means nothing was staged */
+            //     if line.starts_with(' ') {
+            //         staged = false;
+            //         if c == ' ' {
+            //             ctr += 1;
+            //             continue;
+            //         }
+            //     }
+
+            //     ctrl = match c {
+            //        'M' => ChangeType::Modified,
+            //        'D' => ChangeType::Deleted,
+            //        'A' => ChangeType::Added,
+            //        '?' =>
+            //            if second {
+            //                 second = false;
+            //                 ctr += 1;
+            //                 ChangeType::Added
+            //            } else {
+            //                 second = true;
+            //                 continue;
+            //            }
+            //         _ => continue,
+            //     }
+            // }
+
+            // if ctrl == ChangeType::None {
+            //     continue;
+            // }
 
             /* Next up read the rest of the string */
-            let mut meh: &str = &line[ctr..].trim();          
-            let file = String::from(meh);
-            vec.push((file, ctrl));
+            // let mut meh: &str = &line[ctr..].trim();
+            // let file = String::from(meh);
+
+            // println!("Staged: {} | {} {}", staged, ctrl, file);
+            // vec.push((file, ctrl, staged));
         }
 
         return vec;
@@ -105,5 +143,5 @@ impl Git {
 
     pub fn push() {
         Command::new("git").arg("push").output().ok();
-    }
+   }
 }
