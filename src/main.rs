@@ -16,11 +16,6 @@ use cursive::traits::*;
 use cursive::views::*;
 
 
-fn make_git_commit(siv: &mut Cursive, msg: &str) {
-    Git::commit(msg);
-    siv.pop_layer();
-}
-
 
 fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
@@ -45,15 +40,6 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             (&mut *tv).set_content(buffer.render());
-        });
-    }
-
-    {
-        // REMOVE THIS
-        let b = Arc::clone(buffer);
-        siv.add_global_callback('o', move |siv| {
-            let buffer = b.lock().unwrap();
-            eprintln!("{:?}", buffer.get_selection());
         });
     }
 
@@ -104,38 +90,50 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
 
 
     {
-        // MAKING A COMMIT
+        // UNSTAGE ALL
         let b = Arc::clone(buffer);
-        siv.add_global_callback('c', |siv| {
+        siv.add_global_callback('c', move |siv| {
+            let b = Arc::clone(&b);
+            let b2 = Arc::clone(&b);
+
             siv.add_layer(
                 Dialog::new()
                     .title("Enter a commit message")
                     .padding((1, 1, 1, 0))
                     .content(
                         EditView::new()
-                            .on_submit(make_git_commit)
+                            .on_submit(move |siv, txt| {
+                                let mut buffer = b2.lock().unwrap();
+                                Git::commit(txt);
+                                siv.pop_layer();
+                                let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                                update_from_git(&mut buffer, &mut tv);
+                            })
                             .with_id("commit")
                             .fixed_width(20),
                     )
-                    .button("Ok", |siv| {
+                    .button("Ok", move |siv| {
                         let msg =
                             siv.call_on_id("commit", |view: &mut EditView| view.get_content())
                                 .unwrap();
                         Git::commit(&*msg);
+                        let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                        let mut bfo = b.lock().unwrap();
+                        update_from_git(&mut bfo, &mut tv);
                         siv.pop_layer();
                     }),
             );
-
-            // Dialog::around(TextArea::new())
-            //         .button("Ok", move |s| msg = );
         });
 
-        siv.add_global_callback('U', move |siv| {
-            let mut buffer = b.lock().unwrap();
-            Git::unstage_all();
-            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
-            update_from_git(&mut buffer, &mut tv);
-        });
+        {
+            let b = Arc::clone(buffer);
+            siv.add_global_callback('U', move |siv| {
+                let mut buffer = b.lock().unwrap();
+                Git::unstage_all();
+                let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                update_from_git(&mut buffer, &mut tv);
+            });
+        }
     }
 
 
