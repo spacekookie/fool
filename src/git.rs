@@ -9,6 +9,7 @@ use std::io::Read;
 use buffer::ChangeType;
 
 /// Some git functions (stateless)
+/// FIXME: Needs to deal with errors better! 
 pub struct Git;
 impl Git {
 
