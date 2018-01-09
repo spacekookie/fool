@@ -15,8 +15,8 @@ const CURSOR_CHAR: char = '█';
 // #    s = stage file/section, S = stage all unstaged files
 // #    c = commit, C = commit -a (add unstaged)
 // #    P = push to upstream";
-const HELP_FOOTER: &'static str = "# Cheat Sheet (F1 for full help)
-#    s = stage file/section, c = commit, P = push to upstream, Q = quit";
+const HELP_FOOTER: &'static str = "# Cheat Sheet
+#    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
 
 
 #[derive(Debug, Eq, PartialEq, Clone)]
