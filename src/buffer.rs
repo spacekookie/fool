@@ -21,6 +21,10 @@ const HELP_FOOTER: &'static str = "# Cheat Sheet (F1 for full help)
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum ChangeType {
+    
+    // An error type
+    None,
+
     // By default untracked or staged
     Added,
 
@@ -34,6 +38,7 @@ pub enum ChangeType {
 impl Display for ChangeType {
     fn fmt(&self, f: &mut Formatter) -> Result {
         return match self {
+            &ChangeType::None => write!(f, "NONE <Invalid>"),
             &ChangeType::Added => write!(f, "Added"),
             &ChangeType::Modified => write!(f, "Modified"),
             &ChangeType::Deleted => write!(f, "Deleted"),
