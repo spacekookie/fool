@@ -59,12 +59,12 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback('u', move |siv| {
             let mut buffer = b.lock().unwrap();
+            eprintln!("{}", &buffer.get_selection().0);
             Git::unstage(&buffer.get_selection().0);
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             update_from_git(&mut buffer, &mut tv);
         });
     }
-
 
     {
         // STAGE ALL
@@ -88,9 +88,8 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         });
     }
 
-
     {
-        // UNSTAGE ALL
+        // Create a commit
         let b = Arc::clone(buffer);
         siv.add_global_callback('c', move |siv| {
             let b = Arc::clone(&b);
@@ -211,30 +210,6 @@ fn main() {
         siv.add_layer(view);
     }
 
-    // The menubar is a list of (label, menu tree) pairs.
-    siv.menubar()
-        .add_subtree("Help", MenuTree::new())
-        .add_subtree("Quit", MenuTree::new());
-
-    siv.set_autohide_menu(false);
     siv.add_global_callback('Q', |s| s.quit());
-
     siv.run();
 }
-
-
-// This should be the header
-// " Local:    master ~/Projects/code/fool
-//  Head:     8ef7c41 Miep
-
-
-//  Changes:
-// ==> Modified   Cargo.lock
-//     Modified   Cargo.toml
-//     Modified   src/main.rs
-
-//  # Cheat Sheet
-//  #    s = stage file/section, S = stage all unstaged files
-//  #    c = commit, C = commit -a (add unstaged)
-//  #    P = push to upstream
-//     "

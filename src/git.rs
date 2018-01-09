@@ -49,6 +49,7 @@ impl Git {
                 &'?' => Some(( ChangeType::Untracked, file.clone(), false )), // New file, not staged
                 &'M' => Some(( ChangeType::Modified, file.clone(), true )), // Modification staged
                 &'A' => Some(( ChangeType::Added, file.clone(), true )), // Addition staged
+                &'D' => Some(( ChangeType::Deleted, file.clone(), true )), // Deletion staged
                 _ => None
             };
 
