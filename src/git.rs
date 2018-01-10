@@ -102,7 +102,7 @@ impl Git {
 
     pub fn commit(msg: &str) {
         Command::new("git")
-            .arg(format!("commit"))
+            .arg("commit")
             .arg("-m")
             .arg(format!("{}", msg))
             .output()
