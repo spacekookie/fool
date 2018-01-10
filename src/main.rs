@@ -26,7 +26,6 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Up, move |siv| {
             let mut buffer = b.lock().unwrap();
-            eprintln!("Moving up...");
             buffer.move_up();
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
@@ -39,7 +38,6 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback(Key::Down, move |siv| {
             let mut buffer = b.lock().unwrap();
-            eprintln!("Moving down...");
             buffer.move_down();
 
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
@@ -205,7 +203,6 @@ fn main() {
     register_callbacks(&mut siv, &buffer);
     let size = siv.screen_size();
 
-    println!("Test 2");
     {
         let b = Arc::clone(&buffer);
         let mut text_view = TextView::new("<PLACEHOLDER>"); //with_id("text_area");
