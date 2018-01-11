@@ -26,7 +26,7 @@ pub fn setup() -> Theme {
         shadow: Color::from_256colors(236),                 // Dark background #303030
         view: Color::from_256colors(236),                   //
         primary: Color::from_256colors(253),                // Make the text white
-        secondary: Color::from_256colors(165),
+        secondary: Color::from_256colors(240),              // Edit fields are slightly less far
         tertiary: Color::from_256colors(15),
         title_primary: Color::from_256colors(15),
         title_secondary: Color::from_256colors(15),
