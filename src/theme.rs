@@ -1,20 +1,5 @@
 //! The theme module which makes fool all nice and cozy
 
-// pub const CURSIVE_THEME: &'static str = "shadow = false
-// # borders = \"outset\"
-
-// [colors]
-// 	background = \"#333333\"
-// 	shadow     = \"#333333\"
-// 	view       = \"#CCC\"
-// 	primary   = \"#3333FF\"
-// 	secondary = \"#333\"
-// 	tertiary  = \"#2D2D2D\"
-// 	title_primary   = \"BLUE\"
-// 	title_secondary = \"#FFF\"
-// 	highlight          = \"#FFF\"
-// 	highlight_inactive = \"#FFF\"";
-
 
 use cursive::theme::{load_default, Color, Palette, Theme};
 pub fn setup() -> Theme {
