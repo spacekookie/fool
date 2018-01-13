@@ -1,5 +1,7 @@
 # fool
 
+[![Build Status](https://travis-ci.org/spacekookie/fool.svg?branch=master)](https://travis-ci.org/spacekookie/fool)
+
 A powerful git commandline interface which is focused on usability. Use quick keyboard shortcuts to manage your repository, files and commits.
 
 
