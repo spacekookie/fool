@@ -3,19 +3,25 @@ language: rust
 services: docker
 sudo: required
 cache: cargo
+os:
+  - linux
+  - osx
 rust:
-- stable
-- nightly
-
+  - stable
+  - nightly
 matrix:
   allow_failures:
-  - rust: nightly
-
+    - rust: nightly
+branches:
+  only:
+    - master
+    - stable
 script:
-- cargo build --release
-- cargo deb
-- cargo doc
+  - cargo build --release
+  - cargo deb
+  - cargo doc
 
+before_deploy: ./deploy.sh
 deploy:
   provider: releases
   api_key:
@@ -25,6 +31,8 @@ deploy:
    - target/debian/*.deb
   on:
     repo: spacekookie/fool
+    tags: true
+    branch: master
 
 notifications:
   email:
