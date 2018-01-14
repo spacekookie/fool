@@ -1,4 +1,5 @@
 extern crate cursive;
+extern crate clap;
 
 mod buffer;
 use buffer::{Buffer, ChangeType};
@@ -8,19 +9,23 @@ use git::Git;
 
 mod theme;
 
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 
 // Cursive UI includes
 use cursive::Cursive;
-use cursive::menu::MenuTree;
+// use cursive::menu::MenuTree;
 use cursive::event::Key;
 use cursive::traits::*;
 use cursive::views::*;
 
+use clap::App;
 
+const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
+const DEVELOPER: &'static str = env!("CARGO_PKG_AUTHORS");
+const DESCRIPTION: &'static str = env!("CARGO_PKG_DESCRIPTION");
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
-
     {
         // ARROW UP
         let b = Arc::clone(buffer);
@@ -106,9 +111,11 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
                                 let mut buffer = b2.lock().unwrap();
                                 if txt == "" {
                                     siv.pop_layer();
-                                    let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                                    let mut tv: ViewRef<
+                                        TextView,
+                                    > = siv.find_id("text_area").unwrap();
                                     update_from_git(&mut buffer, &mut tv);
-                                    return;    
+                                    return;
                                 }
 
                                 Git::commit(txt);
@@ -122,14 +129,15 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
                     .button("Ok", move |siv| {
                         let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
                         let mut bfo = b.lock().unwrap();
-                        let msg =
-                            siv.call_on_id("commit", |view: &mut EditView| view.get_content()).unwrap();
-                            if *msg == "".to_owned() {
-                                siv.pop_layer();
-                                let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
-                                update_from_git(&mut bfo, &mut tv);
-                                return;    
-                            }
+                        let msg = siv.call_on_id("commit", |view: &mut EditView| {
+                            view.get_content()
+                        }).unwrap();
+                        if *msg == "".to_owned() {
+                            siv.pop_layer();
+                            let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                            update_from_git(&mut bfo, &mut tv);
+                            return;
+                        }
 
                         Git::commit(&*msg);
                         update_from_git(&mut bfo, &mut tv);
@@ -166,7 +174,6 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
     }
 }
 
-
 pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
     buffer.clear();
     buffer.set_remote(&format!("Remote: \t{}", Git::get_remote()));
@@ -178,7 +185,6 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
     buffer.set_head(&format!("Head:   \t{}", Git::get_branch_data().1));
 
     for (t, f, s) in Git::get_status() {
-
         if s {
             buffer.stage(f, t);
         } else {
@@ -192,8 +198,12 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
     tv.set_content(buffer.render());
 }
 
-
 fn main() {
+    let matches = App::new(APP_NAME)
+        .version(VERSION)
+        .author(DEVELOPER)
+        .about(DESCRIPTION)
+        .get_matches();
 
     let buffer = Arc::new(Mutex::new(Buffer::new()));
     let mut siv = Cursive::new();
