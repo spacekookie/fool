@@ -101,49 +101,54 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
             let b = Arc::clone(&b);
             let b2 = Arc::clone(&b);
 
-            siv.add_layer(
-                Dialog::new()
-                    .title("Enter a commit message")
-                    .padding((1, 1, 1, 0))
-                    .content(
-                        EditView::new()
-                            .on_submit(move |siv, txt| {
-                                let mut buffer = b2.lock().unwrap();
-                                if txt == "" {
-                                    siv.pop_layer();
-                                    let mut tv: ViewRef<
-                                        TextView,
-                                    > = siv.find_id("text_area").unwrap();
-                                    update_from_git(&mut buffer, &mut tv);
-                                    return;
-                                }
+            let mut size = siv.screen_size();
+            if size.x > 80 {
+                size.x = 80;
+            }
 
-                                Git::commit(txt);
+            let dialog = Dialog::new()
+                .title("Enter a commit message")
+                .padding((1, 1, 1, 0))
+                .content(
+                    EditView::new()
+                        .on_submit(move |siv, txt| {
+                            let mut buffer = b2.lock().unwrap();
+                            if txt == "" {
                                 siv.pop_layer();
                                 let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
                                 update_from_git(&mut buffer, &mut tv);
-                            })
-                            .with_id("commit")
-                            .fixed_width(20),
-                    )
-                    .button("Ok", move |siv| {
-                        let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
-                        let mut bfo = b.lock().unwrap();
-                        let msg = siv.call_on_id("commit", |view: &mut EditView| {
-                            view.get_content()
-                        }).unwrap();
-                        if *msg == "".to_owned() {
+                                return;
+                            }
+
+                            Git::commit(txt);
                             siv.pop_layer();
                             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
-                            update_from_git(&mut bfo, &mut tv);
-                            return;
-                        }
-
-                        Git::commit(&*msg);
-                        update_from_git(&mut bfo, &mut tv);
+                            update_from_git(&mut buffer, &mut tv);
+                        })
+                        .with_id("commit")
+                        .fixed_width(20),
+                )
+                .button("Ok", move |siv| {
+                    let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                    let mut bfo = b.lock().unwrap();
+                    let msg = siv.call_on_id("commit", |view: &mut EditView| view.get_content())
+                        .unwrap();
+                    if *msg == "".to_owned() {
                         siv.pop_layer();
-                    }),
-            );
+                        let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
+                        update_from_git(&mut bfo, &mut tv);
+                        return;
+                    }
+
+                    Git::commit(&*msg);
+                    update_from_git(&mut bfo, &mut tv);
+                    siv.pop_layer();
+                });
+
+            siv.add_layer(BoxView::with_fixed_size(
+                (size.x - 2, size.y / 2),
+                Panel::new(dialog),
+            ));
         });
 
         {
