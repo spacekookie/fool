@@ -59,13 +59,13 @@ notifications:
     #   os: osx
     #   rust: nightly
 
-# before_install:
-#   - set -e
-#   - rustup self update
+before_install:
+  - set -e
+  - rustup self update
 
-# install:
-#   - sh ci/install.sh
-#   - source ~/.cargo/env || true
+install:
+  - sh ci/install.sh
+  - source ~/.cargo/env || true
 
 # script:
 #   - bash ci/script.sh
