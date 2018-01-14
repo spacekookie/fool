@@ -18,7 +18,7 @@ branches:
     - develop
 script:
   - cargo build --release
-  - cargo deb
+  # - cargo deb
   - cargo doc
 
 before_deploy: ./deploy.sh
