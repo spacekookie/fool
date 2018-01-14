@@ -7,5 +7,9 @@ readme = "README.md"
 authors = ["Katharina Fey <kookie@spacekookie.de>"]
 
 [dependencies]
-cursive = { git = "https://github.com/gyscos/Cursive" }
 clap = "2.29.*"
+
+[dependencies.cursive]
+git = "https://github.com/gyscos/Cursive"
+default-features = false
+features = ["termion-backend"]
