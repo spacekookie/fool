@@ -15,7 +15,7 @@ matrix:
 branches:
   only:
     - master
-    - stable
+    - develop
 script:
   - cargo build --release
   - cargo deb
