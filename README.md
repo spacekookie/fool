@@ -1,7 +1,10 @@
 # fool
 
+[![Build Status](https://travis-ci.org/spacekookie/fool.svg?branch=develop)](https://travis-ci.org/spacekookie/fool) [![Build status](https://ci.appveyor.com/api/projects/status/w29yfx0q5kls3013?svg=true)](https://ci.appveyor.com/project/spacekookie/fool)
+
 A powerful git commandline interface which is focused on usability. Use quick keyboard shortcuts to manage your repository, files and commits.
 
+`fool` currently only works on Linux, MacOS (and other Unix-like systems). Windows support is something that is kinda in-the-works.
 
 ## How to use
 
