@@ -24,9 +24,9 @@ branches:
     - /^v\d+\.\d+\.\d+.*$/ # release tags
     - master
 
-script:
-  - cargo build --release
-  - cargo build --target x86_64-unknown-linux-gnu --release
+# script:
+#   - cargo build --release
+#   - cargo build --target x86_64-unknown-linux-gnu --release
 
 notifications:
   email:
@@ -67,8 +67,8 @@ install:
   - sh ci/install.sh
   - source ~/.cargo/env || true
 
-# script:
-#   - bash ci/script.sh
+script:
+  - bash ci/script.sh
 
 # after_script: set +e
 
