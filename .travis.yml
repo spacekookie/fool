@@ -32,13 +32,12 @@ matrix:
     # OSX
     - env: TARGET=x86_64-apple-darwin
       os: osx
-      branch:
-        - /^v\d+\.\d+\.\d+.*$/
+      if: branch =~ /^v\d+\.\d+\.\d+.*$/
 
     # *BSD
-    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
+    # - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
+    # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
 before_install:
   - set -e
