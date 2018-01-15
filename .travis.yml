@@ -6,9 +6,9 @@ cache: cargo
 before_cache:
   - chmod -R a+r $HOME/.cargo
 
-# env:
-#   global:
-#     - CRATE_NAME=fool
+env:
+  global:
+    - CRATE_NAME=fool
 
 # os:
 #   - linux
@@ -16,8 +16,8 @@ before_cache:
 # rust:
 #   - stable
 
-os: linux
-rust: stable
+# os: linux
+# rust: stable
 
 branches:
   only:
@@ -29,13 +29,13 @@ notifications:
     on_success: never
     on_failure: never
 
-# matrix:
-  # include:
+matrix:
+  include:
     
     # Linux
-    # - env: TARGET=armv7-unknown-linux-gnueabihf
-    # - env: TARGET=i686-unknown-linux-gnu
-    # - env: TARGET=x86_64-unknown-linux-gnu
+    - env: TARGET=armv7-unknown-linux-gnueabihf
+    - env: TARGET=i686-unknown-linux-gnu
+    - env: TARGET=x86_64-unknown-linux-gnu
 
     # OSX
     # - env: TARGET=i686-apple-darwin

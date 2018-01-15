@@ -2,8 +2,6 @@
 
 set -ex
 
-TARGET="x86_64-unknown-linux-gnu"
-
 # TODO This is the "test phase", tweak it as you see fit
 main() {
     cross build --target $TARGET
