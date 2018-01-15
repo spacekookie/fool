@@ -12,7 +12,8 @@ env:
 
 branches:
   only:
-    - /^v\d+\.\d+\.\d+.*$/ # release tags
+    - /^v\d+\.\d+\.\d+.*$/
+    - develop
     - master
 
 notifications:
@@ -29,22 +30,15 @@ matrix:
     - env: TARGET=x86_64-unknown-linux-gnu
 
     # OSX
-    # - env: TARGET=i686-apple-darwin
-    #   os: osx
     - env: TARGET=x86_64-apple-darwin
       os: osx
+      branch:
+        - /^v\d+\.\d+\.\d+.*$/
 
     # *BSD
     - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
-
-    # # Testing other channels
-    # - env: TARGET=x86_64-unknown-linux-gnu
-    #   rust: nightly
-    # - env: TARGET=x86_64-apple-darwin
-    #   os: osx
-    #   rust: nightly
 
 before_install:
   - set -e
