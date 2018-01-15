@@ -48,6 +48,7 @@ impl Git {
             // Test if data is valid for staging stage
             let stage_file = match stage {
                 &'?' => Some(( ChangeType::Untracked, file.clone(), false )), // New file, not staged
+                &'U' => Some(( ChangeType::Conflicted, file.clone(), false )), // MERGE CONFLICT
                 &'M' => Some(( ChangeType::Modified, file.clone(), true )), // Modification staged
                 &'A' => Some(( ChangeType::Added, file.clone(), true )), // Addition staged
                 &'D' => Some(( ChangeType::Deleted, file.clone(), true )), // Deletion staged
@@ -56,6 +57,7 @@ impl Git {
 
             let modified_file = match state {
                 &'?' => Some(( ChangeType::Untracked, file.clone(), false )), // New file, untracked
+                &'U' => Some(( ChangeType::Conflicted, file.clone(), false )), // MERGE CONFLICT
                 &'D' => Some(( ChangeType::Deleted, file.clone(), false )), // Deletion
                 &'M' => Some(( ChangeType::Modified, file.clone(), false )), // Modification
                 _ => None

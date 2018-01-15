@@ -21,20 +21,23 @@ const HELP_FOOTER: &'static str = "# Cheat Sheet
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum ChangeType {
-    // An error type
+    /// An error type
     None,
 
-    // A new, unstaged file
+    /// A new, unstaged file
     Untracked,
 
-    // A new, staged file
+    /// A new, staged file
     Added,
 
-    // Either tracked or staged
+    /// Either tracked or staged
     Modified,
 
-    // Either tracked or staged
+    /// Either tracked or staged
     Deleted,
+
+    /// Merge conflicted
+    Conflicted,
 }
 
 impl Display for ChangeType {
@@ -44,6 +47,7 @@ impl Display for ChangeType {
             &ChangeType::Modified => write!(f, "Modified"),
             &ChangeType::Deleted => write!(f, "Deleted"),
             &ChangeType::Untracked => write!(f, "Untracked"),
+            &ChangeType::Conflicted => write!(f, "Conflict"),
             _ => write!(f, "NONE <Invalid>"),
         };
     }
