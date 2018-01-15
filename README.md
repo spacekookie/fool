@@ -19,6 +19,15 @@ A powerful git commandline interface which is focused on usability. Use quick ke
 
 There is a list of more packages available [in the wiki](https://github.com/spacekookie/fool/wiki/packaging)
 
+### MacOS
+
+You can install it with [homebrew](http://brew.sh):
+
+```
+brew tap spacekookie/kookie
+brew install fool
+```
+
 
 ## License
 
