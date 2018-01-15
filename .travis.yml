@@ -10,15 +10,6 @@ env:
   global:
     - CRATE_NAME=fool
 
-# os:
-#   - linux
-
-# rust:
-#   - stable
-
-# os: linux
-# rust: stable
-
 branches:
   only:
     - /^v\d+\.\d+\.\d+.*$/ # release tags
@@ -44,9 +35,9 @@ matrix:
     #   os: osx
 
     # *BSD
-    # - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
-    # - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-    # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
+    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
     # # Testing other channels
     # - env: TARGET=x86_64-unknown-linux-gnu
