@@ -55,7 +55,21 @@ fn register_callbacks(siv: &mut Cursive, buffer: &Arc<Mutex<Buffer>>) {
         let b = Arc::clone(buffer);
         siv.add_global_callback('s', move |siv| {
             let mut buffer = b.lock().unwrap();
-            Git::stage(&buffer.get_selection().0);
+
+            /* Small hack: Don't let people stage conflicts */
+            let changed = buffer.get_selection();
+            if changed.1 == ChangeType::Conflicted {
+                let dialog = Dialog::new()
+                    .title("Can't stage conflicted file!")
+                    .content(TextView::new("Quit fool, open your favourite text editor\nand fix the issue first!"))
+                    .padding((1, 1, 1, 0))
+                    .button("Ok", |siv| siv.pop_layer());
+
+                siv.add_layer(dialog);
+                return;
+            }
+
+            Git::stage(&changed.0);
             let mut tv: ViewRef<TextView> = siv.find_id("text_area").unwrap();
             update_from_git(&mut buffer, &mut tv);
         });
