@@ -12,4 +12,4 @@ clap = "2.29.*"
 [dependencies.cursive]
 git = "https://github.com/gyscos/Cursive"
 default-features = false
-features = ["pancurses-backend"]
+features = ["termion-backend"]
