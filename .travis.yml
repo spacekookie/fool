@@ -28,7 +28,7 @@ matrix:
   - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
 before_install:
 - openssl aes-256-cbc -K $encrypted_165e7c8ca552_key -iv $encrypted_165e7c8ca552_iv
-  -in homebrew.priv.enc -out homebrew.priv -d
+  -in ci/homebrew.priv.enc -out homebrew.priv -d
 - set -e
 - rustup self update
 install:
