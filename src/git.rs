@@ -76,19 +76,15 @@ impl Git {
     }
 
     pub fn stage(file: &str) {
-        let mut path = run_utility("git rev-parse --show-toplevel");
+        let mut path = run_utility("git rev-parse --show-toplevel").trim().to_owned();
         path.push_str("/");
-        print!("{}", &path);
 
-        // let child = Command::new("git")
-        //     .current_dir(&path)
-        //     .arg("add")
-        //     .arg(format!("{}", file))
-        //     .spawn().ok().unwrap();
-
-        // let output = &mut child.stdout.unwrap();
-        // let mut text = String::new();
-        // output.read_to_string(&mut text).ok();
+        let child = Command::new("git")
+            .current_dir(&path)
+            .arg("add")
+            .arg(format!("{}", file))
+            .output()
+            .ok();
     }
 
     pub fn stage_all() {
@@ -96,8 +92,11 @@ impl Git {
     }
 
     pub fn unstage(file: &str) {
+        let mut path = run_utility("git rev-parse --show-toplevel").trim().to_owned();
+        path.push_str("/");
+
         Command::new("git")
-            .current_dir(&run_utility("git rev-parse --show-toplevel"))
+            .current_dir(&path)
             .arg("reset")
             .arg(format!("{}", file))
             .output()
