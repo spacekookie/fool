@@ -1,7 +1,6 @@
 #!/bin/bash
 
 TARGET=x86_64-apple-darwin
-TRAVIS_TAG=v0.3.0
 CRATE_NAME=fool
 
 # Only run when doing a Mac build
