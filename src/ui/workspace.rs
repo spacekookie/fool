@@ -16,5 +16,7 @@ pub struct Workspace {
 }
 
 impl Workspace {
-
+    pub fn new() -> Workspace {
+        return Workspace {};
+    }
 }

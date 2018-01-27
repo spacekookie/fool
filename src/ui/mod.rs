@@ -2,7 +2,7 @@
 //! 
 //! 
 
-mod command;
+mod commander;
 mod workspace;
 mod theme;
 

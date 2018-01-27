@@ -8,6 +8,7 @@ mod git;
 use git::Git;
 
 mod theme;
+mod state;
 mod ui;
 
 use std::sync::{Arc, Mutex};
