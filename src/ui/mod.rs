@@ -3,8 +3,9 @@
 //! 
 
 mod command;
-mod buffer;
+mod workspace;
+mod theme;
+
 
 /* Expose and re-export the container module */
 pub mod container;
-pub use container::*;
