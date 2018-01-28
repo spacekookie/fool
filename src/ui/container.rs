@@ -3,7 +3,12 @@
 //!
 
 use cursive::Cursive;
+use cursive::vec::Vec2;
 use cursive::theme::Theme;
+use cursive::event::Event::WindowResize;
+
+// use cursive::traits::*;
+// use cursive::views::*;
 
 use std::sync::{Arc, Mutex};
 
@@ -43,11 +48,20 @@ impl Ui {
         ws.setup(&mut siv);
         ws.draw(&state, &mut siv);
 
-        return Ui {
+        let mut me = Ui {
             siv: siv,
             ws: Arc::new(Mutex::new(ws)),
             buffer: Arc::new(Mutex::new(state)),
         };
+
+        let ws = Arc::clone(&me.ws);
+        let b = Arc::clone(&me.buffer);
+        me.siv.add_global_callback(WindowResize, move |s: &mut Cursive| {
+            let buffer = b.lock().unwrap();
+            ws.lock().unwrap().draw(&buffer, s);
+        });
+
+        return me;
     }
 
     /// Triggers the main rendering 
@@ -55,4 +69,10 @@ impl Ui {
         self.siv.run();
     }
 
+    /// Get the current size of the screen
+    /// 
+    /// **Note** You probably want to add your code to the ScreenResize callback! 
+    pub fn get_screen_size(&self) -> Vec2 {
+        return self.siv.screen_size();
+    }
 }

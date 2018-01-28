@@ -95,8 +95,6 @@ impl Buffer {
     pub fn update(&mut self) {
         self.clear();
 
-        println!("Running update...");
-
         /* Fill in all the files */
         for (t, f, s) in Git::get_status() {
             if s {

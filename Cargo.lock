@@ -77,7 +77,7 @@ dependencies = [
 [[package]]
 name = "cursive"
 version = "0.7.6-alpha.0"
-source = "git+https://github.com/gyscos/Cursive#800470e22c44071a4aab83f5f9769b05472bc397"
+source = "git+https://github.com/gyscos/Cursive#f091cec86112fb92a31a1d1dac14b5623e958e3a"
 dependencies = [
  "chan 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "chan-signal 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",

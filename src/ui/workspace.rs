@@ -50,49 +50,42 @@ impl Workspace {
     /// It will check that the line length doesn't overflow the workspace but
     /// will not do any other checking in regards to height. That is handled by
     /// the general draw call
-    fn draw_line(&self, line: String, buffer: &mut String, constaints: (usize, &mut usize)) {
+    fn draw_line<S: Into<String>>(&self, l: S, buffer: &mut String, x: usize, y: &mut usize) {
+        let line: String = l.into();
         let length = line.len();
         let mut text: String = line.clone();
-        if length + 1 >= constaints.0 {
-            let slice = &line[..constaints.0 - 4];
+        if length + 1 >= x {
+            let slice = &line[..x /* pad */ - 2 /* ... */- 4];
             text = format!("{} ...", slice);
         }
 
-        *constaints.1 += 1;
+        *y += 1;
         write!(buffer, "{}", &text).ok();
     }
 
     pub fn draw(&self, state: &Buffer, siv: &mut Cursive) {
         let mut text = String::new();
         let mut ay = 0;
-        let Vec2 { x, y } = siv.screen_size();
+        let Vec2 { x, mut y } = siv.screen_size();
+        y -= 2; // Frame correction
 
-        self.draw_line(format!("Remote: \t{}\n", &state.remote), &mut text, (x, &mut ay));
-        self.draw_line(format!("Local: \t{}\n", &state.local), &mut text, (x, &mut ay));
-        self.draw_line(format!("Head:   \t{}\n", &state.head), &mut text, (x, &mut ay));
-        self.draw_line(format!("   "), &mut text, (x, &mut ay));
+        self.draw_line(format!("Remote:    {}\n", &state.remote), &mut text, x, &mut ay);
+        self.draw_line(format!("Local:     {}\n", &state.local), &mut text, x, &mut ay);
+        self.draw_line(format!("Head:      {}\n", &state.head), &mut text, x, &mut ay);
+        self.draw_line("\n", &mut text, x, &mut ay);
 
-        /* Write information about the git repository */
-        // write!(&mut text, "Remote: \t{}\n", &state.remote).ok();
-        // write!(&mut text, "Local: \t{}\n", &state.local).ok();
-        // write!(&mut text, "Head:   \t{}\n", &state.head).ok();
-        ay += 4;
-
-        /* Some space */
-        write!(&mut text, "\n").ok();
-
-        let mut current_line = 0;
+        // eprintln!("Drawn so far {}", &ay);
 
         /* First add all untracked files */
         write!(&mut text, "Untracked files: \n").ok();
         for f in &state.untracked {
-            if current_line == self.position {
+            if ay == self.position {
                 write!(&mut text, "{} {}\n", CURSOR_CHAR, &f.0).ok();
             } else {
                 write!(&mut text, "  {}\n", &f.0).ok();
             }
 
-            current_line += 1;
+            ay += 1;
         }
 
         /* Some space */
@@ -101,13 +94,13 @@ impl Workspace {
         /* Then add all unstaged */
         write!(&mut text, "Changes: \n").ok();
         for f in &state.unstaged {
-            if current_line == self.position {
+            if ay == self.position {
                 write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
             } else {
                 write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
             }
 
-            current_line += 1;
+            ay += 1;
         }
 
         /* Some space */
@@ -116,13 +109,13 @@ impl Workspace {
         /* Finally everything staged */
         write!(&mut text, "Staged Changes: \n").ok();
         for f in &state.staged {
-            if current_line == self.position {
+            if ay == self.position {
                 write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
             } else {
                 write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
             }
 
-            current_line += 1;
+            ay += 1;
         }
 
         /* Some more space */
