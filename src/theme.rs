@@ -8,17 +8,16 @@ pub fn setup() -> Theme {
 
     /* This is the dark colour palette */
     let mut p = theme::default_palette();
-    p[Background] = Color::from_256colors(236);
-    p[Background] = Color::from_256colors(236);
-    p[Shadow] = Color::from_256colors(236);
-    p[View] = Color::from_256colors(236);
-    p[Primary] = Color::from_256colors(253);
-    p[Secondary] = Color::from_256colors(242);
-    p[Tertiary] = Color::from_256colors(15);
-    p[TitlePrimary] = Color::from_256colors(141);
-    p[TitleSecondary] = Color::from_256colors(141);
-    p[Highlight] = Color::from_256colors(15);
-    p[HighlightInactive] = Color::from_256colors(15);
+    p[Background] = Color::from_256colors(239); //236);
+    p[Shadow] = Color::from_256colors(239); //236);
+    p[View] = Color::from_256colors(239); //238);
+    p[Primary] = Color::from_256colors(239); //253);
+    p[Secondary] = Color::from_256colors(239); //242);
+    p[Tertiary] = Color::from_256colors(239); //15);
+    p[TitlePrimary] = Color::from_256colors(239); //141);
+    p[TitleSecondary] = Color::from_256colors(239); //141);
+    p[Highlight] = Color::from_256colors(239); //15);
+    p[HighlightInactive] = Color::from_256colors(239); //15);
 
     t.palette = p;
     return t;

@@ -8,8 +8,8 @@ mod git;
 use git::Git;
 
 mod theme;
-// mod state;
-// mod ui;
+mod state;
+mod ui;
 
 use std::sync::{Arc, Mutex};
 
@@ -220,7 +220,7 @@ pub fn update_from_git(buffer: &mut Buffer, tv: &mut TextView) {
 }
 
 fn main() {
-    let matches = App::new(APP_NAME)
+    let _ = App::new(APP_NAME)
         .version(VERSION)
         .author(DEVELOPER)
         .about(DESCRIPTION)
