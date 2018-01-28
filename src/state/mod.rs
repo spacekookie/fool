@@ -4,4 +4,4 @@ mod git;
 
 /* Squash export the buffer */
 pub mod buffer;
-pub use buffer::*;
+pub use self::buffer::*;

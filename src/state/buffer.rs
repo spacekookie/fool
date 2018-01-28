@@ -62,7 +62,7 @@ impl Display for ChangeType {
 /// a better git interface module.
 /// 
 /// Can be triggered to update it's view. It calls directly to the Git module
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Buffer {
     /// Any file in the repo that is untracked
     pub untracked: Vec<(String, ChangeType)>,
@@ -85,10 +85,17 @@ pub struct Buffer {
 
 
 impl Buffer {
+
+    pub fn new() -> Buffer {
+        return Default::default();
+    }
+    
     
     /// Trigger the buffer to update itself via the git interface
     pub fn update(&mut self) {
         self.clear();
+
+        println!("Running update...");
 
         /* Fill in all the files */
         for (t, f, s) in Git::get_status() {

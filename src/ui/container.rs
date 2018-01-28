@@ -24,16 +24,16 @@ pub enum FoolTheme {
 }
 
 /// Represents the entire UI tree built for fool
-pub struct UI {
+pub struct Ui {
     siv: Cursive,
     ws: Workspace,
 }
 
-impl UI {
+impl Ui {
 
     /// Initialise the UI with a theme
-    pub fn new(t: FoolTheme, state: Arc<Mutex<Buffer>>) -> UI {
-        let mut me = UI {
+    pub fn new(t: FoolTheme, state: Arc<Mutex<Buffer>>) -> Ui {
+        let mut me = Ui {
             siv: Cursive::new(),
             ws: Workspace::new(),
         };

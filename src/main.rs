@@ -1,22 +1,15 @@
 extern crate cursive;
 extern crate clap;
 
-mod buffer;
-use buffer::{Buffer, ChangeType};
-
-mod theme;
-mod state;
 mod ui;
+use ui::*;
+
+mod state;
+use state::Buffer;
 
 use std::sync::{Arc, Mutex};
-
-// Cursive UI includes
-use cursive::Cursive;
-use cursive::event::Key;
-use cursive::traits::*;
-use cursive::views::*;
-
 use clap::App;
+
 
 const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
 const DEVELOPER: &'static str = env!("CARGO_PKG_AUTHORS");
@@ -216,36 +209,46 @@ const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 // }
 
 fn main() {
+
+    /* Print --help/ --version and ignore matches */
     let _ = App::new(APP_NAME)
         .version(VERSION)
         .author(DEVELOPER)
         .about(DESCRIPTION)
         .get_matches();
 
-    let buffer = Arc::new(Mutex::new(Buffer::new()));
-    let mut siv = Cursive::new();
+    // TODO: Handle config creation/ loading
 
-    /* Set the theme to our custom one */
-    siv.set_theme(theme::setup());
+    /* Create an Arc-Mutexed buffer */
+    let mut buffer = Arc::new(Mutex::new(Buffer::new()));
 
-    /* Register keybinding callbacks */
-    // register_callbacks(&mut siv, &buffer);
-    let size = siv.screen_size();
+    /* Initialise the main Ui */
+    let ui = Ui::new(FoolTheme::Dark, Arc::clone(&buffer));
 
-    {
-        let b = Arc::clone(&buffer);
-        let mut text_view = TextView::new("<PLACEHOLDER>"); //with_id("text_area");
-        // update_from_git(&mut buffer.lock().unwrap(), &mut text_view);
+    // println!("Creating buffer...");
+    // buffer.update();
 
-        text_view.set_scrollable(false);
-        let view = BoxView::with_fixed_size(
-            (size.x - 2, size.y - 2),
-            Panel::new(text_view.with_id("text_area")),
-        );
+    // /* Set the theme to our custom one */
+    // siv.set_theme(theme::setup());
 
-        siv.add_layer(view);
-    }
+    // /* Register keybinding callbacks */
+    // // register_callbacks(&mut siv, &buffer);
+    // let size = siv.screen_size();
 
-    siv.add_global_callback('Q', |s| s.quit());
-    siv.run();
+    // {
+    //     let b = Arc::clone(&buffer);
+    //     let mut text_view = TextView::new("<PLACEHOLDER>"); //with_id("text_area");
+    //     // update_from_git(&mut buffer.lock().unwrap(), &mut text_view);
+
+    //     text_view.set_scrollable(false);
+    //     let view = BoxView::with_fixed_size(
+    //         (size.x - 2, size.y - 2),
+    //         Panel::new(text_view.with_id("text_area")),
+    //     );
+
+    //     siv.add_layer(view);
+    // }
+
+    // siv.add_global_callback('Q', |s| s.quit());
+    // siv.run();
 }
