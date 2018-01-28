@@ -219,11 +219,12 @@ fn main() {
 
     // TODO: Handle config creation/ loading
 
-    /* Create an Arc-Mutexed buffer */
-    let mut buffer = Arc::new(Mutex::new(Buffer::new()));
+    /* Create a buffer */
+    let buffer = Buffer::new();
 
     /* Initialise the main Ui */
-    let ui = Ui::new(FoolTheme::Dark, Arc::clone(&buffer));
+    let mut ui = Ui::new(FoolTheme::Dark, buffer);
+    ui.run();
 
     // println!("Creating buffer...");
     // buffer.update();

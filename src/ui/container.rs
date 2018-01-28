@@ -27,15 +27,17 @@ pub enum FoolTheme {
 pub struct Ui {
     siv: Cursive,
     ws: Workspace,
+    buffer: Arc<Mutex<Buffer>>,
 }
 
 impl Ui {
 
     /// Initialise the UI with a theme
-    pub fn new(t: FoolTheme, state: Arc<Mutex<Buffer>>) -> Ui {
+    pub fn new(t: FoolTheme, state: Buffer) -> Ui {
         let mut me = Ui {
             siv: Cursive::new(),
             ws: Workspace::new(),
+            buffer: Arc::new(Mutex::new(state)),
         };
 
         me.siv.set_theme(match t {
@@ -44,11 +46,20 @@ impl Ui {
             FoolTheme::Custom(theme) => theme,
         });
 
+        /* Setup the basic workspace */
+        me.ws.setup(&mut me.siv);
+        me.ws.update(&mut me.buffer.lock().unwrap());
+
         me.siv.add_global_callback(WindowResize, |_| {
             
         });
 
         return me;
+    }
+
+    /// Triggers the main rendering 
+    pub fn run(&mut self) {
+        self.siv.run();
     }
 
     /// Get the current size of the screen
