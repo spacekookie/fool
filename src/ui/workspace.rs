@@ -12,6 +12,7 @@
 
 use cursive::Cursive;
 use cursive::traits::*;
+use cursive::vec::Vec2;
 use cursive::views::{TextView, BoxView, Panel};
 use state::{Buffer, ChangeType};
 
@@ -35,6 +36,9 @@ impl Workspace {
         );
 
         siv.add_layer(view);
+    }
+
+    pub fn set_size(&mut self, size: Vec2) {
     }
 
     pub fn update(&mut self, state: &Buffer) {

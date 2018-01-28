@@ -26,7 +26,7 @@ pub enum FoolTheme {
 /// Represents the entire UI tree built for fool
 pub struct Ui {
     siv: Cursive,
-    ws: Workspace,
+    ws: Arc<Mutex<Workspace>>,
     buffer: Arc<Mutex<Buffer>>,
 }
 
@@ -34,24 +34,29 @@ impl Ui {
 
     /// Initialise the UI with a theme
     pub fn new(t: FoolTheme, state: Buffer) -> Ui {
-        let mut me = Ui {
-            siv: Cursive::new(),
-            ws: Workspace::new(),
-            buffer: Arc::new(Mutex::new(state)),
-        };
 
-        me.siv.set_theme(match t {
+        /* Initialise Cursive */
+        let mut siv = Cursive::new();
+        siv.set_theme(match t {
             FoolTheme::Dark => theme::dark(),
             FoolTheme::Light => theme::light(),
             FoolTheme::Custom(theme) => theme,
         });
+        
+        /* Initialise Workspace initially */
+        let mut ws = Workspace::new();
+        ws.setup(&mut siv);
+        ws.update(&state);
 
-        /* Setup the basic workspace */
-        me.ws.setup(&mut me.siv);
-        me.ws.update(&mut me.buffer.lock().unwrap());
+        let mut me = Ui {
+            siv: siv,
+            ws: Arc::new(Mutex::new(ws)),
+            buffer: Arc::new(Mutex::new(state)),
+        };
 
-        me.siv.add_global_callback(WindowResize, |_| {
-            
+        let ws = Arc::clone(&me.ws);
+        me.siv.add_global_callback(WindowResize, move |s| {
+            ws.lock().unwrap().set_size(s.screen_size());
         });
 
         return me;

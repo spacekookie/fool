@@ -222,7 +222,7 @@ fn main() {
     /* Create a buffer */
     let buffer = Buffer::new();
 
-    /* Initialise the main Ui */
+    /* Initialise the main Ui (blocks) */
     let mut ui = Ui::new(FoolTheme::Dark, buffer);
     ui.run();
 
