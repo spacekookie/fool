@@ -14,7 +14,7 @@ use std::fmt::{Display, Formatter, Result};
 use super::git::Git;
 
 
-/// 
+///
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum ChangeType {
     /// An error type
@@ -55,12 +55,12 @@ impl Display for ChangeType {
 
 
 /// Represent the buffered git repository state.
-/// 
+///
 /// It also handles string concatination. It gives direct access to the buffered
 /// git state, without doing any processing on the text itself. It shouldn't have
 /// to track where the cursor position is and should at some point be merged with
 /// a better git interface module.
-/// 
+///
 /// Can be triggered to update it's view. It calls directly to the Git module
 #[derive(Default, Debug)]
 pub struct Buffer {
@@ -85,12 +85,26 @@ pub struct Buffer {
 
 
 impl Buffer {
-
     pub fn new() -> Buffer {
         return Default::default();
     }
-    
-    
+
+    pub fn is_empty(&self) -> bool {
+        return self.staged.is_empty() | self.unstaged.is_empty() | self.untracked.is_empty();
+    }
+
+    pub fn has_untracked(&self) -> bool {
+        return !self.untracked.is_empty();
+    }
+
+    pub fn has_unstaged(&self) -> bool {
+        return !self.unstaged.is_empty();
+    }
+
+    pub fn has_staged(&self) -> bool {
+        return !self.staged.is_empty();
+    }
+
     /// Trigger the buffer to update itself via the git interface
     pub fn update(&mut self) {
         self.clear();
