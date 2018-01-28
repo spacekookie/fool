@@ -36,7 +36,6 @@ impl Workspace {
     pub fn setup(&mut self, siv: &mut Cursive) {
         let mut text_view = TextView::new("<PLACEHOLDER>");
         text_view.set_scrollable(false);
-        let size = siv.screen_size();
 
         let view = BoxView::with_full_screen(
             Panel::new(text_view.with_id("workspace")),
@@ -60,6 +59,7 @@ impl Workspace {
         }
 
         *y += 1;
+        text.push_str("\n");
         write!(buffer, "{}", &text).ok();
     }
 
@@ -69,9 +69,9 @@ impl Workspace {
         let Vec2 { x, mut y } = siv.screen_size();
         y -= 2; // Frame correction
 
-        self.draw_line(format!("Remote:    {}\n", &state.remote), &mut text, x, &mut ay);
-        self.draw_line(format!("Local:     {}\n", &state.local), &mut text, x, &mut ay);
-        self.draw_line(format!("Head:      {}\n", &state.head), &mut text, x, &mut ay);
+        self.draw_line(format!("Remote:    {}", &state.remote), &mut text, x, &mut ay);
+        self.draw_line(format!("Local:     {}", &state.local), &mut text, x, &mut ay);
+        self.draw_line(format!("Head:      {}", &state.head), &mut text, x, &mut ay);
         self.draw_line("\n", &mut text, x, &mut ay);
 
         // eprintln!("Drawn so far {}", &ay);
