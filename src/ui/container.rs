@@ -3,10 +3,12 @@
 //!
 
 use cursive::Cursive;
+use cursive::vec::Vec2;
 use cursive::theme::Theme;
-use cursive::event::Key;
-use cursive::traits::*;
-use cursive::views::*;
+use cursive::event::Event::WindowResize;
+
+// use cursive::traits::*;
+// use cursive::views::*;
 
 use std::sync::{Arc, Mutex};
 
@@ -42,6 +44,17 @@ impl UI {
             FoolTheme::Custom(theme) => theme,
         });
 
+        me.siv.add_global_callback(WindowResize, |_| {
+            
+        });
+
         return me;
+    }
+
+    /// Get the current size of the screen
+    /// 
+    /// **Note** You probably want to add your code to the ScreenResize callback! 
+    pub fn get_screen_size(&self) -> Vec2 {
+        return self.siv.screen_size();
     }
 }
