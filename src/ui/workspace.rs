@@ -17,6 +17,8 @@ use cursive::views::{BoxView, Panel, TextView, ViewRef};
 use state::{Buffer, ChangeType};
 use std::fmt::Write;
 
+use super::input::Command;
+
 const CURSOR_CHAR: char = '█';
 const HELP_FOOTER: &'static str = "# Cheat Sheet
 #    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
@@ -24,11 +26,15 @@ const HELP_FOOTER: &'static str = "# Cheat Sheet
 
 pub struct Workspace {
     position: usize,
+    items: usize,
 }
 
 impl Workspace {
     pub fn new() -> Workspace {
-        return Workspace { position: 0 };
+        return Workspace {
+            position: 0,
+            items: 0,
+        };
     }
 
     pub fn setup(&mut self, siv: &mut Cursive) {
@@ -41,28 +47,24 @@ impl Workspace {
         siv.add_fullscreen_layer(view);
     }
 
-    /// Simple utility function which draws a single line
-    ///
-    /// It will check that the line length doesn't overflow the workspace but
-    /// will not do any other checking in regards to height. That is handled by
-    /// the general draw call
-    fn draw_line<S: Into<String>>(l: S, buffer: &mut String, x: usize, y: &mut usize) {
-        let line: String = l.into();
-        let length = line.len();
-        let mut text: String = line.clone();
-        if length + 1 >= x {
-            let slice = &line[..x /* pad */ - 2 /* ... */- 4];
-            text = format!("{} ...", slice);
+    pub fn cmd(&mut self, cmd: Command) {
+        use self::Command::*;
+        match cmd {
+            Up => if self.position > 0 {
+                self.position -= 1;
+            },
+            Down => if self.position < self.items - 1 {
+                self.position += 1;
+            },
         }
-
-        *y += 1;
-        text.push_str("\n");
-        write!(buffer, "{}", &text).ok();
     }
 
+    /// Get the current position of the cursor
+    pub fn get_position(&self) -> usize {
+        return self.position;
+    }
 
-
-    pub fn draw(&self, state: &Buffer, siv: &mut Cursive) {
+    pub fn draw(&mut self, state: &Buffer, siv: &mut Cursive) {
         let mut text = String::new();
         let (mut ay, mut item) = (0, 0);
         let Vec2 { x, mut y } = siv.screen_size();
@@ -165,5 +167,27 @@ impl Workspace {
         /* Update siv */
         let mut tv: ViewRef<TextView> = siv.find_id("workspace").unwrap();
         (&mut *tv).set_content(text);
+
+        /* Store the number of items we rendered */
+        self.items = item;
+    }
+
+    /// Simple utility function which draws a single line
+    ///
+    /// It will check that the line length doesn't overflow the workspace but
+    /// will not do any other checking in regards to height. That is handled by
+    /// the general draw call
+    fn draw_line<S: Into<String>>(l: S, buffer: &mut String, x: usize, y: &mut usize) {
+        let line: String = l.into();
+        let length = line.len();
+        let mut text: String = line.clone();
+        if length + 1 >= x {
+            let slice = &line[..x /* pad */ - 2 /* ... */- 4];
+            text = format!("{} ...", slice);
+        }
+
+        *y += 1;
+        text.push_str("\n");
+        write!(buffer, "{}", &text).ok();
     }
 }

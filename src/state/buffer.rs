@@ -105,6 +105,19 @@ impl Buffer {
         return !self.staged.is_empty();
     }
 
+    pub fn get_element(&self, pos: usize) -> (String, ChangeType) {
+        let untracked = self.untracked.len();
+        let unstaged = self.unstaged.len();
+
+        if pos < untracked {
+            return get_element(&self.untracked, pos);
+        } else if pos >= untracked && pos < untracked + unstaged {
+            return get_element(&self.unstaged, pos - untracked);
+        } else {
+            return get_element(&self.staged, pos - untracked - unstaged);
+        }
+    }
+
     /// Trigger the buffer to update itself via the git interface
     pub fn update(&mut self) {
         self.clear();
@@ -133,4 +146,29 @@ impl Buffer {
         self.unstaged.clear();
         self.staged.clear();
     }
+}
+
+
+/// Get the type of a string file
+fn get_type(vec: &Vec<(String, ChangeType)>, item: &String) -> Option<ChangeType> {
+    for meh in vec {
+        if &meh.0 == item {
+            return Some(meh.1.clone());
+        }
+    }
+
+    return None;
+}
+
+fn get_element(vec: &Vec<(String, ChangeType)>, element: usize) -> (String, ChangeType) {
+    let mut ctr = 0;
+    for meh in vec {
+        if ctr == element {
+            return meh.clone();
+        }
+
+        ctr += 1;
+    }
+
+    return ("".to_owned(), ChangeType::Added);
 }

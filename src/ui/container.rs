@@ -16,6 +16,7 @@ use state::buffer::Buffer;
 use ui::theme;
 use ui::workspace::*;
 
+use super::input::Input;
 
 pub enum FoolTheme {
     Dark,
@@ -61,6 +62,9 @@ impl Ui {
             ws.lock().unwrap().draw(&buffer, s);
         });
 
+        /* Register all key callbacks */
+        me.register_all_keys();
+
         return me;
     }
 
@@ -75,4 +79,21 @@ impl Ui {
     pub fn get_screen_size(&self) -> Vec2 {
         return self.siv.screen_size();
     }
+
+    /// To add a new key-map, add it to this list
+    /// 
+    /// Maybe at some point, this could take a nicer list of key-bindings, provided
+    /// from the user config
+    fn register_all_keys(&mut self) {
+        Input::register_quit(&mut self.siv);
+        Input::register_push(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        Input::register_move_up(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        Input::register_move_down(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        
+        Input::register_stage(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        Input::register_unstage(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        Input::register_commit(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+    }
 }
+
+
