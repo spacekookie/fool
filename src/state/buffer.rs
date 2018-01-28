@@ -90,11 +90,6 @@ impl Buffer {
     pub fn update(&mut self) {
         self.clear();
 
-        /* Fill in some metadata first */
-        self.remote = Git::get_remote();
-        self.local = format!("{} {}", Git::get_branch_data().0, Git::get_directory());
-        self.head = Git::get_branch_data().1;
-
         /* Fill in all the files */
         for (t, f, s) in Git::get_status() {
             if s {
@@ -107,8 +102,11 @@ impl Buffer {
             }
         }
 
+        /* Fill in some metadata  */
+        self.remote = Git::get_remote();
+        self.local = format!("{} {}", Git::get_branch_data().0, Git::get_directory());
+        self.head = Git::get_branch_data().1;
     }
-
 
     /// Clear the current state to start over from
     fn clear(&mut self) {
@@ -116,5 +114,4 @@ impl Buffer {
         self.unstaged.clear();
         self.staged.clear();
     }
-
 }
