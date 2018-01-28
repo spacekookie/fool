@@ -18,6 +18,8 @@ use state::{Buffer, ChangeType};
 use std::fmt::Write;
 
 const CURSOR_CHAR: char = '█';
+const HELP_FOOTER: &'static str = "# Cheat Sheet
+#    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
 
 
 pub struct Workspace {
@@ -44,7 +46,7 @@ impl Workspace {
     /// It will check that the line length doesn't overflow the workspace but
     /// will not do any other checking in regards to height. That is handled by
     /// the general draw call
-    fn draw_line<S: Into<String>>(&self, l: S, buffer: &mut String, x: usize, y: &mut usize) {
+    fn draw_line<S: Into<String>>(l: S, buffer: &mut String, x: usize, y: &mut usize) {
         let line: String = l.into();
         let length = line.len();
         let mut text: String = line.clone();
@@ -58,129 +60,107 @@ impl Workspace {
         write!(buffer, "{}", &text).ok();
     }
 
+
+
     pub fn draw(&self, state: &Buffer, siv: &mut Cursive) {
         let mut text = String::new();
         let (mut ay, mut item) = (0, 0);
         let Vec2 { x, mut y } = siv.screen_size();
-        y -= 2; // Frame correction + space for help
+        y -= 4; // Frame correction + space for help
 
         /* Draw the header to the top of the screen */
-        self.draw_line(format!("Remote: {}", &state.remote), &mut text, x, &mut ay);
-        self.draw_line(format!("Local:  {}", &state.local), &mut text, x, &mut ay);
-        self.draw_line(format!("Head:   {}", &state.head), &mut text, x, &mut ay);
-        self.draw_line("", &mut text, x, &mut ay);
+        Workspace::draw_line(format!("Remote: {}", &state.remote), &mut text, x, &mut ay);
+        Workspace::draw_line(format!("Local:  {}", &state.local), &mut text, x, &mut ay);
+        Workspace::draw_line(format!("Head:   {}", &state.head), &mut text, x, &mut ay);
 
         /* Check if we have untracked files */
-        if state.has_untracked() && ay < y {
-            self.draw_line("Untracked files:", &mut text, x, &mut ay);
+        if state.has_untracked() && ay < y - 2 {
+            Workspace::draw_line("", &mut text, x, &mut ay);
+            Workspace::draw_line("Untracked files:", &mut text, x, &mut ay);
 
             for f in &state.untracked {
-                if ay > y { /* Break rendering if screen is full */
+                if ay > y - 2 {
+                    /* Break rendering if screen is full */
                     break;
                 }
 
                 if item == self.position {
-                    self.draw_line(format!("{} {}", CURSOR_CHAR, &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(
+                        format!("{} {}", CURSOR_CHAR, &f.0),
+                        &mut text,
+                        x,
+                        &mut ay,
+                    );
                 } else {
-                    self.draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
                 }
 
                 item += 1;
             }
         }
 
-        self.draw_line("", &mut text, x, &mut ay);
 
         /* Check if we have untracked files */
-        if state.has_unstaged() && ay < y {
-            self.draw_line("Changes:", &mut text, x, &mut ay);
+        if state.has_unstaged() && ay < y - 2 {
+            Workspace::draw_line("", &mut text, x, &mut ay);
+            Workspace::draw_line("Changes:", &mut text, x, &mut ay);
 
             for f in &state.unstaged {
-                if ay > y { /* Break rendering if screen is full */
+                if ay > y - 2 {
+                    /* Break rendering if screen is full */
                     break;
                 }
 
                 if item == self.position {
-                    self.draw_line(format!("{} {}", CURSOR_CHAR, &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(
+                        format!("{} {}", CURSOR_CHAR, &f.0),
+                        &mut text,
+                        x,
+                        &mut ay,
+                    );
                 } else {
-                    self.draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
                 }
 
                 item += 1;
             }
         }
 
-        self.draw_line("", &mut text, x, &mut ay);
 
         /* Check if we have untracked files */
-        if state.has_staged() && ay < y {
-            self.draw_line("Staged files:", &mut text, x, &mut ay);
+        if state.has_staged() && ay < y - 2 {
+            Workspace::draw_line("", &mut text, x, &mut ay);
+            Workspace::draw_line("Staged files:", &mut text, x, &mut ay);
 
             for f in &state.staged {
-                if ay > y { /* Break rendering if screen is full */
+                if ay > y - 2 {
+                    /* Break rendering if screen is full */
                     break;
                 }
 
                 if item == self.position {
-                    self.draw_line(format!("{} {}", CURSOR_CHAR, &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(
+                        format!("{} {}", CURSOR_CHAR, &f.0),
+                        &mut text,
+                        x,
+                        &mut ay,
+                    );
                 } else {
-                    self.draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
+                    Workspace::draw_line(format!("  {}", &f.0), &mut text, x, &mut ay);
                 }
 
                 item += 1;
             }
         }
 
-        self.draw_line(format!("\nRendered so far {}", ay), &mut text, x, &mut ay);
+        /* Fill the rest of the buffer*/
+        if ay < y {
+            for _ in 0..y - ay {
+                Workspace::draw_line("", &mut text, x, &mut ay);
+            }
+        }
 
-
-        // /* First add all untracked files */
-        // write!(&mut text, "Untracked files: \n").ok();
-        // for f in &state.untracked {
-        //     if ay == self.position {
-        //         write!(&mut text, "{} {}\n", CURSOR_CHAR, &f.0).ok();
-        //     } else {
-        //         write!(&mut text, "  {}\n", &f.0).ok();
-        //     }
-
-        //     ay += 1;
-        // }
-
-        // /* Some space */
-        // write!(&mut text, "\n").ok();
-
-        // /* Then add all unstaged */
-        // write!(&mut text, "Changes: \n").ok();
-        // for f in &state.unstaged {
-        //     if ay == self.position {
-        //         write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
-        //     } else {
-        //         write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
-        //     }
-
-        //     ay += 1;
-        // }
-
-        // /* Some space */
-        // write!(&mut text, "\n").ok();
-
-        // /* Finally everything staged */
-        // write!(&mut text, "Staged Changes: \n").ok();
-        // for f in &state.staged {
-        //     if ay == self.position {
-        //         write!(&mut text, "{} {}\t  {}\n", CURSOR_CHAR, &f.1, &f.0).ok();
-        //     } else {
-        //         write!(&mut text, "  {}\t  {}\n", &f.1, &f.0).ok();
-        //     }
-
-        //     ay += 1;
-        // }
-
-        /* Some more space */
-        write!(&mut text, "\n\n").ok();
-
-        /* Add small cheat sheet */
-        // write!(&mut text, "{}", HELP_FOOTER).ok();
+        Workspace::draw_line(HELP_FOOTER, &mut text, x, &mut ay);
 
         /* Update siv */
         let mut tv: ViewRef<TextView> = siv.find_id("workspace").unwrap();
