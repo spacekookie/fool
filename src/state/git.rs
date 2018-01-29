@@ -6,7 +6,7 @@
 use std::process::{Command, Stdio};
 use std::io::Read;
 
-use buffer::ChangeType;
+use super::buffer::ChangeType;
 
 /// Some git functions (stateless)
 /// FIXME: Needs to deal with errors better! 

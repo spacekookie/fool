@@ -1,7 +1,7 @@
 [package]
 name = "fool"
 description = "A powerful and simple to use git client for Terminal interfaces"
-version = "0.2.1"
+version = "0.3.0-alpha.0"
 license = "MIT/X11"
 readme = "README.md"
 authors = ["Katharina Fey <kookie@spacekookie.de>"]
@@ -11,5 +11,5 @@ clap = "2.29.*"
 
 [dependencies.cursive]
 git = "https://github.com/gyscos/Cursive"
-default-features = false
-features = ["termion-backend"]
+# default-features = false
+# features = ["termion-backend"]
