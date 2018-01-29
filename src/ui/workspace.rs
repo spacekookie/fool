@@ -14,24 +14,29 @@ use cursive::Cursive;
 use cursive::traits::*;
 use cursive::vec::Vec2;
 use cursive::views::{BoxView, Panel, TextView, ViewRef};
-use state::{Buffer, ChangeType};
+
+use std::sync::{Arc, Mutex};
 use std::fmt::Write;
 
 use super::input::Command;
+use super::layout::Layout;
+use state::{Buffer, ChangeType};
+
 
 const CURSOR_CHAR: char = '█';
 const HELP_FOOTER: &'static str = "# Cheat Sheet
 #    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
 
-
 pub struct Workspace {
+    layout: Layout,
     position: usize,
     items: usize,
 }
 
 impl Workspace {
-    pub fn new() -> Workspace {
+    pub fn new(bf: Arc<Mutex<Buffer>>) -> Workspace {
         return Workspace {
+            layout: Layout::new(bf, (0, 0)),
             position: 0,
             items: 0,
         };

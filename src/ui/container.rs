@@ -44,15 +44,17 @@ impl Ui {
             FoolTheme::Custom(theme) => theme,
         });
         
+        let buffer = Arc::new(Mutex::new(state));
+
         /* Initialise Workspace initially */
-        let mut ws = Workspace::new();
+        let mut ws = Workspace::new(Arc::clone(&buffer));
         ws.setup(&mut siv);
-        ws.draw(&state, &mut siv);
+        ws.draw(&buffer.lock().unwrap(), &mut siv);
 
         let mut me = Ui {
             siv: siv,
             ws: Arc::new(Mutex::new(ws)),
-            buffer: Arc::new(Mutex::new(state)),
+            buffer: buffer,
         };
 
         let ws = Arc::clone(&me.ws);

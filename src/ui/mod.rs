@@ -4,6 +4,7 @@
 
 mod commander;
 mod workspace;
+mod layout;
 mod theme;
 mod input;
 

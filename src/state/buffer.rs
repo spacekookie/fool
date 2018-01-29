@@ -93,6 +93,10 @@ impl Buffer {
         return self.staged.is_empty() | self.unstaged.is_empty() | self.untracked.is_empty();
     }
 
+    pub fn len(&self) -> usize {
+        return self.staged.len() + self.unstaged.len() + self.untracked.len()
+    }
+
     pub fn has_untracked(&self) -> bool {
         return !self.untracked.is_empty();
     }
