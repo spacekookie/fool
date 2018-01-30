@@ -16,7 +16,8 @@ use state::buffer::Buffer;
 use ui::theme;
 use ui::workspace::*;
 
-use super::input::Input;
+use super::layout::Layout;
+// use super::input::Input;
 
 pub enum FoolTheme {
     Dark,
@@ -25,16 +26,15 @@ pub enum FoolTheme {
 }
 
 /// Represents the entire UI tree built for fool
-pub struct Ui {
+pub struct Ui<'a> {
     siv: Cursive,
-    ws: Arc<Mutex<Workspace>>,
-    buffer: Arc<Mutex<Buffer>>,
+    ws: Arc<Mutex<Workspace<'a>>>
 }
 
-impl Ui {
+impl<'a> Ui<'a> {
 
     /// Initialise the UI with a theme
-    pub fn new(t: FoolTheme, state: Buffer) -> Ui {
+    pub fn new(t: FoolTheme, state: &mut Buffer) -> Ui {
 
         /* Initialise Cursive */
         let mut siv = Cursive::new();
@@ -43,29 +43,29 @@ impl Ui {
             FoolTheme::Light => theme::light(),
             FoolTheme::Custom(theme) => theme,
         });
-        
-        let buffer = Arc::new(Mutex::new(state));
+
+        let l = Layout::new(state, siv.screen_size());
+        let ws = Workspace::new(l);
 
         /* Initialise Workspace initially */
-        let mut ws = Workspace::new(Arc::clone(&buffer));
-        ws.setup(&mut siv);
-        ws.draw(&buffer.lock().unwrap(), &mut siv);
+        // let mut ws = Workspace::new(Arc::clone(&buffer));
+        // ws.setup(&mut siv);
+        // ws.draw(&buffer.lock().unwrap(), &mut siv);
 
         let mut me = Ui {
             siv: siv,
-            ws: Arc::new(Mutex::new(ws)),
-            buffer: buffer,
+            ws: Arc::new(Mutex::new(ws))
         };
 
-        let ws = Arc::clone(&me.ws);
-        let b = Arc::clone(&me.buffer);
-        me.siv.add_global_callback(WindowResize, move |s: &mut Cursive| {
-            let buffer = b.lock().unwrap();
-            ws.lock().unwrap().draw(&buffer, s);
-        });
+        // let ws = Arc::clone(&me.ws);
+        // let b = Arc::clone(&me.buffer);
+        // me.siv.add_global_callback(WindowResize, move |s: &mut Cursive| {
+        //     let buffer = b.lock().unwrap();
+        //     ws.lock().unwrap().draw(&buffer, s);
+        // });
 
-        /* Register all key callbacks */
-        me.register_all_keys();
+        // /* Register all key callbacks */
+        // me.register_all_keys();
 
         return me;
     }
@@ -87,14 +87,15 @@ impl Ui {
     /// Maybe at some point, this could take a nicer list of key-bindings, provided
     /// from the user config
     fn register_all_keys(&mut self) {
-        Input::register_quit(&mut self.siv);
-        Input::register_push(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
-        Input::register_move_up(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
-        Input::register_move_down(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+
+        // Input::register_quit(&mut self.siv);
+        // Input::register_push(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
+        // Input::register_move_up(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
+        // Input::register_move_down(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
         
-        Input::register_stage(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
-        Input::register_unstage(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
-        Input::register_commit(&mut self.siv, Arc::clone(&self.buffer), Arc::clone(&self.ws));
+        // Input::register_stage(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
+        // Input::register_unstage(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
+        // Input::register_commit(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
     }
 }
 

@@ -24,7 +24,7 @@ impl Input {
         siv.add_global_callback('Q', |s| s.quit());
     }
 
-    pub fn register_push(siv: &mut Cursive, bf: Arc<Mutex<Buffer>>, ws: Arc<Mutex<Workspace>>) {
+    pub fn register_push(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
         siv.add_global_callback('P', move |siv| {
             Git::push();
 
@@ -45,7 +45,7 @@ impl Input {
         });
     }
 
-    pub fn register_move_up(siv: &mut Cursive, bf: Arc<Mutex<Buffer>>, ws: Arc<Mutex<Workspace>>) {
+    pub fn register_move_up(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
         siv.add_global_callback(Key::Up, move |siv| {
             let mut workspace = ws.lock().unwrap();
             workspace.cmd(Command::Up);
@@ -59,7 +59,7 @@ impl Input {
 
     pub fn register_move_down(
         siv: &mut Cursive,
-        bf: Arc<Mutex<Buffer>>,
+        bf: Arc<Mutex<Workspace>>,
         ws: Arc<Mutex<Workspace>>,
     ) {
         siv.add_global_callback(Key::Down, move |siv| {
@@ -73,7 +73,7 @@ impl Input {
         });
     }
 
-    pub fn register_stage(siv: &mut Cursive, bf: Arc<Mutex<Buffer>>, ws: Arc<Mutex<Workspace>>) {
+    pub fn register_stage(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
         siv.add_global_callback('s', move |siv| {
             let mut buffer = bf.lock().unwrap();
             let mut workspace = ws.lock().unwrap();
@@ -100,7 +100,7 @@ impl Input {
         });
     }
 
-    pub fn register_unstage(siv: &mut Cursive, bf: Arc<Mutex<Buffer>>, ws: Arc<Mutex<Workspace>>) {
+    pub fn register_unstage(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
         siv.add_global_callback('u', move |siv| {
             let mut buffer = bf.lock().unwrap();
             let mut workspace = ws.lock().unwrap();
@@ -115,7 +115,7 @@ impl Input {
         });
     }
 
-    pub fn register_commit(siv: &mut Cursive, bf: Arc<Mutex<Buffer>>, ws: Arc<Mutex<Workspace>>) {
+    pub fn register_commit(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
         siv.add_global_callback('c', move |siv| {
             let mut size = siv.screen_size();
             if size.x > 80 {

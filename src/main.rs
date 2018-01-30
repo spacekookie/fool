@@ -27,11 +27,9 @@ fn main() {
 
     // TODO: Handle config creation/ loading
 
-    /* Create a buffer */
-    let mut buffer = Buffer::new();
-    buffer.update();
 
     /* Initialise the main Ui (blocks) */
-    let mut ui = Ui::new(FoolTheme::Dark, buffer);
+    let mut buffer = Buffer::new();
+    let mut ui = Ui::new(FoolTheme::Dark, &mut buffer);
     ui.run();
 }

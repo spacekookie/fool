@@ -5,35 +5,38 @@
 //! rearrange them in their order if necessary.
 
 use std::fmt::{Display, Formatter, Result};
-use std::sync::{Arc, Mutex};
 use state::buffer::Buffer;
-
+use cursive::vec::Vec2;
 
 
 /// A layout represents items in a list on screen
-pub struct Layout {
-    bf: Arc<Mutex<Buffer>>,
-    res: (usize, usize),
-    length: usize,
-    view_start: usize,
-    view_stop: usize,
+pub struct Layout<'a> {
+    buf: &'a mut Buffer,
+    start: usize,
+    stop: usize,
 }
-impl Layout {
-    pub fn new(bf: Arc<Mutex<Buffer>>, res: (usize, usize)) -> Layout {
-        let len = bf.lock().unwrap().len();
-        return Layout {
-            bf,
-            res,
-            length: len,
-            view_start: 0,
-            view_stop: res.1,
+
+impl<'a> Layout<'a> {
+    pub fn new(buf: &'a mut Buffer, res: Vec2) -> Layout {
+        let mut me = Layout {
+            buf,
+            start: 0,
+            stop: res.y,
         };
+
+        me.update(res);
+        return me;
     }
 
-    pub fn update(&mut self) {}
+    pub fn update(&mut self, res: Vec2) {
+        /* Update the dataset */
+        self.buf.update();
+
+        /* Then do formatting */
+    }
 }
 
-impl Display for Layout {
+impl<'a> Display for Layout<'a> {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let mut text = String::new();
         return write!(f, "{}", text);
