@@ -26,6 +26,13 @@ brew tap spacekookie/kookie
 brew install fool
 ```
 
+### Void Linux
+
+You can install via xbps
+
+```
+xbps-install -S fool
+```
 
 ## License
 
