@@ -26,6 +26,14 @@ brew tap spacekookie/kookie
 brew install fool
 ```
 
+### Arch Linux
+
+Can currently only be found in the AUR
+
+```
+pacaur -S fool  # Or an AUR helper of your choice
+```
+
 ### Void Linux
 
 You can install via xbps
