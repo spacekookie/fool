@@ -28,7 +28,6 @@ macro_rules! check_y2_bound {
     };
 }
 
-
 pub struct LineSnippet {
     line: String,
     bounds: usize,
@@ -37,6 +36,20 @@ pub struct LineSnippet {
 impl LineSnippet {
     pub fn new(line: String, bounds: usize) -> LineSnippet {
         return LineSnippet { line, bounds };
+    }
+}
+
+impl Display for LineSnippet {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let length = self.line.len();
+        let mut line = self.line.clone();
+        if length + 1 >= self.bounds {
+            let slice = &self.line[..length];
+            line = format!("{} ...", slice);
+        }
+
+        line.push_str("\n");
+        return write!(f, "{}", line);
     }
 }
 
@@ -117,16 +130,21 @@ impl Layout {
             }
         }
 
-        text.push(LineSnippet::new(String::from(""), res.x));
+        /* Fill the rest of the buffer*/
+        if y_pos - 2 < res.y {
+            for _ in 0..res.y - 2 - y_pos {
+                text.push(LineSnippet::new(String::from(""), res.x));
+            }
+        }
+
         text.push(LineSnippet::new(String::from(HELP_FOOTER), res.x));
     }
 
     /// Adds a single line (with bounds) to the layout vector
-    /// 
+    ///
     /// Returns the new size of the vector that can be tracked externally
     fn add_line<S: Into<String>>(text_buffer: &mut Vec<LineSnippet>, b: usize, line: S) -> usize {
         let line: String = line.into();
-        let length = line.len();
         let bounds = b - 4; // Subtract space for the " ..." at the end of the line
         text_buffer.push(LineSnippet::new(line, bounds));
         return text_buffer.len();
@@ -137,15 +155,7 @@ impl Display for Layout {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let mut s = String::new();
         for string in &self.text {
-            let length = string.line.len();
-            let mut tmp = string.line.clone();
-            if length + 1 >= string.bounds {
-                let slice = &string.line[..string.bounds];
-                tmp = format!("{} ...", slice);
-            }
-
-            s.push_str(&tmp);
-            s.push_str("\n");
+            s.push_str(&format!("{}", string));
         }
         return write!(f, "{}", s);
     }
