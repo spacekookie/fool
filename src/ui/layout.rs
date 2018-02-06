@@ -11,17 +11,18 @@ use cursive::vec::Vec2;
 const CURSOR_CHAR: char = '█';
 const HELP_FOOTER: &'static str = "# Cheat Sheet
 #    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
-const HELP_FOOTER_SIZE: usize = 2;
+const HELP_FOOTER_SIZE: usize = 4;
 
 macro_rules! check_y_bound {
     ($curr:expr, $max:expr) => {
-        if $curr > $max {
+        if $curr > $max - HELP_FOOTER_SIZE {
+            eprintln!("Running break condition!");
             break;
         }
     };
 }
 
-macro_rules! check_x_bound {
+macro_rules! check_y2_bound {
     ($curr:expr, $max:expr) => {
         ($curr < $max - HELP_FOOTER_SIZE)
     };
@@ -84,7 +85,7 @@ impl Layout {
         Layout::add_line(text, res.x, format!("Head:    {}", &self.buf.head));
 
         /* Draw the Untracked block (if we have space) */
-        if self.buf.has_untracked() && check_x_bound!(y_pos, res.y) {
+        if self.buf.has_untracked() && check_y2_bound!(y_pos, res.y) {
             Layout::add_line(text, res.x, "");
             y_pos = Layout::add_line(text, res.x, "Untracked files:");
 
@@ -95,7 +96,7 @@ impl Layout {
         }
 
         /* Draw the Changed block */
-        if self.buf.has_unstaged() && check_x_bound!(y_pos, res.y) {
+        if self.buf.has_unstaged() && check_y2_bound!(y_pos, res.y) {
             Layout::add_line(text, res.x, "");
             y_pos = Layout::add_line(text, res.x, "Changed files:");
 
@@ -106,7 +107,7 @@ impl Layout {
         }
 
         /* Draw the Staged block */
-        if self.buf.has_staged() && check_x_bound!(y_pos, res.y) {
+        if self.buf.has_staged() && check_y2_bound!(y_pos, res.y) {
             Layout::add_line(text, res.x, "");
             y_pos = Layout::add_line(text, res.x, "Staged files:");
 
@@ -115,6 +116,9 @@ impl Layout {
                 y_pos = Layout::add_line(text, res.x, format!("  {}", &f.0));
             }
         }
+
+        text.push(LineSnippet::new(String::from(""), res.x));
+        text.push(LineSnippet::new(String::from(HELP_FOOTER), res.x));
     }
 
     /// Adds a single line (with bounds) to the layout vector
@@ -143,7 +147,6 @@ impl Display for Layout {
             s.push_str(&tmp);
             s.push_str("\n");
         }
-
         return write!(f, "{}", s);
     }
 }
