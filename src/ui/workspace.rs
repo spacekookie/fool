@@ -15,24 +15,15 @@ use cursive::traits::*;
 use cursive::vec::Vec2;
 use cursive::views::{BoxView, Panel, TextView, ViewRef};
 
-use std::sync::{Arc, Mutex};
-use std::fmt::Write;
-
-// use super::input::Command;
+use super::input::Command;
 use super::layout::Layout;
-use state::{Buffer, ChangeType};
 
-
-const CURSOR_CHAR: char = '█';
-const HELP_FOOTER: &'static str = "# Cheat Sheet
-#    s = stage, u = unstage, c = commit, P = push to upstream, Q = quit";
-
-pub struct Workspace<'a> {
-    layout: Layout<'a>,
+pub struct Workspace {
+    layout: Layout,
 }
 
-impl<'a> Workspace<'a> {
-    pub fn new(layout: Layout<'a>) -> Workspace<'a> {
+impl Workspace {
+    pub fn new(layout: Layout) -> Workspace {
         return Workspace {
             layout: layout,
         };
@@ -54,7 +45,9 @@ impl<'a> Workspace<'a> {
         (&mut *tv).set_content(format!("{}", self.layout));
     }
 
-    // pub fn cmd(&mut self, cmd: Command) {
+
+
+    pub fn cmd(&mut self, cmd: Command) {
     //     use self::Command::*;
     //     match cmd {
     //         Up => if self.position > 0 {
@@ -64,7 +57,7 @@ impl<'a> Workspace<'a> {
     //             self.position += 1;
     //         },
     //     }
-    // }
+    }
 
     /// Get the current position of the cursor
     pub fn get_position(&self) -> usize {

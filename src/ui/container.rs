@@ -26,15 +26,15 @@ pub enum FoolTheme {
 }
 
 /// Represents the entire UI tree built for fool
-pub struct Ui<'a> {
+pub struct Ui {
     siv: Cursive,
-    ws: Arc<Mutex<Workspace<'a>>>
+    ws: Arc<Mutex<Workspace>>
 }
 
-impl<'a> Ui<'a> {
+impl Ui {
 
     /// Initialise the UI with a theme
-    pub fn new(t: FoolTheme, state: &mut Buffer) -> Ui {
+    pub fn new(t: FoolTheme, state: Buffer) -> Ui {
 
         /* Initialise Cursive */
         let mut siv = Cursive::new();
@@ -46,26 +46,19 @@ impl<'a> Ui<'a> {
 
         let l = Layout::new(state, siv.screen_size());
         let ws = Workspace::new(l);
-
-        /* Initialise Workspace initially */
-        // let mut ws = Workspace::new(Arc::clone(&buffer));
-        // ws.setup(&mut siv);
-        // ws.draw(&buffer.lock().unwrap(), &mut siv);
-
         let mut me = Ui {
             siv: siv,
-            ws: Arc::new(Mutex::new(ws))
+            ws: Arc::new(Mutex::new(ws)),
         };
 
-        // let ws = Arc::clone(&me.ws);
-        // let b = Arc::clone(&me.buffer);
-        // me.siv.add_global_callback(WindowResize, move |s: &mut Cursive| {
-        //     let buffer = b.lock().unwrap();
-        //     ws.lock().unwrap().draw(&buffer, s);
-        // });
+        /* Hook window resize to redraw */
+        let ws_arc_c = Arc::clone(&me.ws);
+        me.siv.add_global_callback(WindowResize, move |s: &mut Cursive| {
+            ws_arc_c.lock().unwrap().draw(s);
+        });
 
-        // /* Register all key callbacks */
-        // me.register_all_keys();
+        /* Register all key callbacks */
+        me.register_all_keys();
 
         return me;
     }

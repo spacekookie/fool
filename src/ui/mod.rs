@@ -6,7 +6,7 @@ mod commander;
 mod workspace;
 mod layout;
 mod theme;
-// mod input;
+mod input;
 
 /* Expose and re-export the container module */
 pub mod container;

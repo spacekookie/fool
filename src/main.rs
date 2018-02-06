@@ -29,7 +29,7 @@ fn main() {
 
 
     /* Initialise the main Ui (blocks) */
-    let mut buffer = Buffer::new();
-    let mut ui = Ui::new(FoolTheme::Dark, &mut buffer);
+    let buffer = Buffer::new();
+    let mut ui = Ui::new(FoolTheme::Dark, buffer);
     ui.run();
 }
