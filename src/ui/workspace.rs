@@ -24,9 +24,7 @@ pub struct Workspace {
 
 impl Workspace {
     pub fn new(layout: Layout) -> Workspace {
-        return Workspace {
-            layout: layout,
-        };
+        return Workspace { layout: layout };
     }
 
     pub fn setup(&mut self, siv: &mut Cursive) {
@@ -45,18 +43,16 @@ impl Workspace {
         (&mut *tv).set_content(format!("{}", self.layout));
     }
 
-
-
     pub fn cmd(&mut self, cmd: Command) {
-    //     use self::Command::*;
-    //     match cmd {
-    //         Up => if self.position > 0 {
-    //             self.position -= 1;
-    //         },
-    //         Down => if self.position < self.items - 1 {
-    //             self.position += 1;
-    //         },
-    //     }
+        //     use self::Command::*;
+        //     match cmd {
+        //         Up => if self.position > 0 {
+        //             self.position -= 1;
+        //         },
+        //         Down => if self.position < self.items - 1 {
+        //             self.position += 1;
+        //         },
+        //     }
     }
 
     /// Get the current position of the cursor
@@ -101,7 +97,6 @@ impl Workspace {
     //         }
     //     }
 
-
     //     /* Check if we have untracked files */
     //     if state.has_unstaged() && ay < y - 2 {
     //         Workspace::draw_line("", &mut text, x, &mut ay);
@@ -127,7 +122,6 @@ impl Workspace {
     //             item += 1;
     //         }
     //     }
-
 
     //     /* Check if we have untracked files */
     //     if state.has_staged() && ay < y - 2 {

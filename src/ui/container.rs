@@ -45,7 +45,10 @@ impl Ui {
         });
 
         let l = Layout::new(state, siv.screen_size());
-        let ws = Workspace::new(l);
+        let mut ws = Workspace::new(l);
+        ws.setup(&mut siv);
+        ws.draw(&mut siv);
+
         let mut me = Ui {
             siv: siv,
             ws: Arc::new(Mutex::new(ws)),

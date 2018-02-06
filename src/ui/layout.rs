@@ -34,26 +34,35 @@ impl Layout {
     }
 
     pub fn update(&mut self, res: Vec2) {
-        
+
         /* Subtract the boundries around the text area */
         let mut res = res;
-        let mut y_pos = 0;
         res.x -= 2;
         res.y -= 2;
 
         /* Update the dataset */
         self.buf.update();
+        self.text.clear();
 
-        /* Then do formatting */
-        self.draw_line((res.x, &mut y_pos), format!("Remote:\torigin @ https://github.com/spacekookie/fool"));
+        let mut text = String::new();
+        self.format_buffer(&mut text, res);
+        self.text = text;
+    }
+
+    /// Format the buffer with only a read-only copy of the innards
+    fn format_buffer(&self, text: &mut String, res: Vec2) {
+        let mut y_pos = 0;
+        Layout::draw_line(text, (res.x, &mut y_pos), &format!("Remote:\t{}", &self.buf.remote));
+        Layout::draw_line(text, (res.x, &mut y_pos), &format!("Local:\t\t{}", &self.buf.local));
+        Layout::draw_line(text, (res.x, &mut y_pos), &format!("Head:\t\t{}", &self.buf.head));
     }
 
     /// Draws a single line of text into the text buffer
-    /// 
+    ///
     /// Does boundry checking on how long the line can be as
     /// well as if it should add padding
-    fn draw_line<S: Into<String>>(&mut self, res: (usize, &mut usize), line: S) {
-        let line: String = line.into();
+    fn draw_line/*<S: Into<String>>*/(text_buffer: &mut String, res: (usize, &mut usize), line: &String) {
+        // let line: String = line.into();
         let length = line.len();
         let mut text: String = line.clone();
         if length + 1 >= res.0 {
@@ -63,7 +72,7 @@ impl Layout {
 
         *res.1 += 1;
         text.push_str("\n");
-        write!(self.text, "{}", &text).ok();
+        write!(text_buffer, "{}", &text).ok();
     }
 }
 
