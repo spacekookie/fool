@@ -17,7 +17,7 @@ use ui::theme;
 use ui::workspace::*;
 
 use super::layout::Layout;
-// use super::input::Input;
+use super::input::Input;
 
 pub enum FoolTheme {
     Dark,
@@ -84,10 +84,17 @@ impl Ui {
     /// from the user config
     fn register_all_keys(&mut self) {
 
-        // Input::register_quit(&mut self.siv);
+        Input::register_quit(&mut self.siv);
+        
+        // FIXME: Change this to be handled on the workspace itself
+        Input::register_move_up(&mut self.siv, Arc::clone(&self.ws));
+        Input::register_move_down(&mut self.siv, Arc::clone(&self.ws));
+
+        Input::register_select_up(&mut self.siv, Arc::clone(&self.ws));
+        Input::register_select_down(&mut self.siv, Arc::clone(&self.ws));
+        
+        
         // Input::register_push(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
-        // Input::register_move_up(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
-        // Input::register_move_down(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
         
         // Input::register_stage(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
         // Input::register_unstage(&mut self.siv, Arc::clone(&self.ws), Arc::clone(&self.ws));
