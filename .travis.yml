@@ -1,17 +1,17 @@
 dist: trusty
 language: rust
-services: docker
+# services: docker
 sudo: required
 cache: cargo
 before_cache:
 - chmod -R a+r $HOME/.cargo
 
 # We need the ncurses headers to build 
-addons:
-  apt:
-    packages:
-    - ncurses-dev
-    - gcc
+# addons:
+#   apt:
+#     packages:
+#     - ncurses-dev
+#     - gcc
 
 env:
   global:
