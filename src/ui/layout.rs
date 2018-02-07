@@ -5,7 +5,7 @@
 //! rearrange them in their order if necessary.
 
 use std::fmt::{Display, Formatter, Result, Write};
-use state::buffer::Buffer;
+use state::Buffer;
 use cursive::vec::Vec2;
 
 const CURSOR_CHAR: char = '█';
@@ -105,6 +105,7 @@ impl Layout {
             }
         }
         self.length = ctr;
+        eprintln!("Items: {}", self.length);
     }
 
     pub fn render(&self, pos: usize, size: usize) -> String {
@@ -116,8 +117,9 @@ impl Layout {
 
         for line in &mut text {
             
+            // if (ctr == pos || (size > 1 && ctr < pos + size)) && line.item {
             /* Prepend a cursor if the line is selected */
-            if (ctr == pos || (size > 1 && ctr == pos + size)) && line.item {
+            if line.item && ((size > 1 && ctr < pos + size) || ctr == pos) {
                 line.prepend(format!("{} ", CURSOR_CHAR));
             } else if line.item {
                 line.prepend("  ");

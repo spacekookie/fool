@@ -1,15 +1,13 @@
 extern crate cursive;
 extern crate clap;
 
+mod state;
+
 mod ui;
 use ui::*;
 
-mod state;
-use state::Buffer;
 
-use std::sync::{Arc, Mutex};
 use clap::App;
-
 
 const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
 const DEVELOPER: &'static str = env!("CARGO_PKG_AUTHORS");
@@ -29,7 +27,6 @@ fn main() {
 
 
     /* Initialise the main Ui (blocks) */
-    let buffer = Buffer::new();
-    let mut ui = Ui::new(FoolTheme::Dark, buffer);
+    let mut ui = Ui::new(FoolTheme::Dark);
     ui.run();
 }

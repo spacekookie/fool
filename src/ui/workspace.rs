@@ -25,21 +25,34 @@ enum Grow {
     None,
 }
 
+/// Represents an ever changing block of selection
+struct SelectBlock {
+    pub mode: Grow,
+    pub pos: usize,
+    pub size: usize,
+}
+
+impl SelectBlock {
+    pub fn new() -> SelectBlock {
+        return SelectBlock {
+            mode: Grow::None,
+            pos: 0,
+            size: 0,
+        };
+    }
+}
+
 pub struct Workspace {
-    layout: Layout,
-    position: usize,
-    select_size: usize,
-    growth: Grow,
-    dirty: bool,
+    select: SelectBlock,
+    pub layout: Layout,
+    pub dirty: bool,
 }
 
 impl Workspace {
     pub fn new(layout: Layout) -> Workspace {
         return Workspace {
             layout: layout,
-            position: 0,
-            growth: Grow::None,
-            select_size: 1,
+            select: SelectBlock::new(),
             dirty: true,
         };
     }
@@ -59,7 +72,11 @@ impl Workspace {
             true => {
                 self.layout.update(siv.screen_size());
                 let mut tv: ViewRef<TextView> = siv.find_id("workspace").unwrap();
-                (&mut *tv).set_content(self.layout.render(self.position, self.select_size).as_ref());
+                (&mut *tv).set_content(
+                    self.layout
+                        .render(self.select.pos, self.select.size)
+                        .as_ref(),
+                );
                 false
             }
             _ => false,
@@ -67,42 +84,54 @@ impl Workspace {
     }
 
     pub fn cmd(&mut self, cmd: Command) {
-        eprintln!("Getting event: {:?}", cmd);
-
         match cmd {
-            /* A simple move up. Breaks multi-line select */
-            Command::MoveUp => if self.position > 0 {
-                self.position -= 1;
-            },
-
-            /* A simple move down. Breaks multi-line select */
-            Command::MoveDown => if self.position < self.layout.len() - 1 {
-                self.position += 1;
-            },
-
-            /* Either start or continue down growd. Shrinks up growth */
-            Command::SelectDown => match self.growth {
-                Grow::Down | Grow::None => {
-                    self.growth = Grow::Down;
-                    self.select_size += 1;
-                }
-                Grow::Up => self.select_size -= 1,
-            },
-
-            /* Either start or continue up growd. Shrinks down growth */
-            Command::SelectUp => match self.growth {
-                Grow::Up | Grow::None => {
-                    self.growth = Grow::Up;
-                    self.select_size += 1;
-                    self.position -= 1; // Shift select point up
+            Command::SelectUp => match self.select.mode {
+                Grow::None | Grow::Up => {
+                    self.select.mode = Grow::Up;
+                    if self.select.pos > 0 {
+                        self.select.pos -= 1;
+                    }
+                    self.select.size += 1;
                 }
                 Grow::Down => {
-                    self.select_size -= 1;
-                    self.position += 1; // Shift select point down
+                    self.select.size -= 1;
+                    if self.select.size == 1 {
+                        self.select.mode = Grow::None;
+                    }
                 }
             },
+            Command::SelectDown => match self.select.mode {
+                Grow::None | Grow::Down => {
+                    self.select.mode = Grow::Down;
+                    if self.select.pos + self.select.size < self.layout.len() {
+                        self.select.size += 1;
+                    }
+                }
+                Grow::Up => {
+                    self.select.size -= 1;
+                    if self.select.size == 1 {
+                        self.select.mode = Grow::None;
+                    }
+                }
+            },
+            Command::MoveUp => {
+                self.select.mode = Grow::None;
+                self.select.size = 1;
+                if self.select.pos > 0 {
+                    self.select.pos -= 1;
+                }
+            }
+            Command::MoveDown => {
+                self.select.mode = Grow::None;
+                self.select.size = 1;
+                if self.select.pos < self.layout.len() - 1 {
+                    self.select.pos += 1;
+                }
+            }
+            Command::Dirty => { /* 🤷 */ }
         }
 
         self.dirty = true;
+        eprintln!("Pos: {}, Size: {}, State: {:?}", self.select.pos, self.select.size, self.select.mode);
     }
 }

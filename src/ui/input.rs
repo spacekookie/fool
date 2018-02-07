@@ -1,7 +1,7 @@
 //! Handle all input given to fool
 
 use cursive::Cursive;
-use cursive::event::Key;
+use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::*;
 
@@ -13,9 +13,16 @@ use state::{Buffer, ChangeType, Git};
 
 /// A simple enum that can represent different commands given
 /// to other components
+#[derive(Debug)]
 pub enum Command {
-    Up,
-    Down,
+    
+    MoveUp,
+    MoveDown,
+    
+    SelectUp,
+    SelectDown,
+
+    Dirty,
 }
 
 pub struct Input;
@@ -45,17 +52,46 @@ impl Input {
     //     });
     // }
 
-    // pub fn register_move_up(siv: &mut Cursive, bf: Arc<Mutex<Workspace>>, ws: Arc<Mutex<Workspace>>) {
-    //     siv.add_global_callback(Key::Up, move |siv| {
-    //         let mut workspace = ws.lock().unwrap();
-    //         workspace.cmd(Command::Up);
+    pub fn register_move_up(siv: &mut Cursive, ws: Arc<Mutex<Workspace>>) {
+        siv.add_global_callback(Key::Up, move |siv| {
+            let mut workspace = ws.lock().unwrap();
+            workspace.cmd(Command::MoveUp);
+            workspace.draw(siv);
+        });
+    }
 
-    //         let mut buffer = bf.lock().unwrap();
-    //         buffer.update();
+    pub fn register_move_down(siv: &mut Cursive, ws: Arc<Mutex<Workspace>>) {
+        siv.add_global_callback(Key::Down, move |siv| {
+            let mut workspace = ws.lock().unwrap();
+            workspace.cmd(Command::MoveDown);
+            workspace.draw(siv);
+        });
+    }
 
-    //         workspace.draw(&buffer, siv);
-    //     });
-    // }
+    pub fn register_select_up(siv: &mut Cursive, ws: Arc<Mutex<Workspace>>) {
+        siv.add_global_callback(Event::Shift(Key::Up), move |siv| {
+            let mut workspace = ws.lock().unwrap();
+            workspace.cmd(Command::SelectUp);
+            workspace.draw(siv);
+        });
+    }
+
+    pub fn register_select_down(siv: &mut Cursive, ws: Arc<Mutex<Workspace>>) {
+        siv.add_global_callback(Event::Shift(Key::Down), move |siv| {
+            let mut workspace = ws.lock().unwrap();
+            workspace.cmd(Command::SelectDown);
+            workspace.draw(siv);
+        });
+    }
+
+    pub fn register_refresh(siv: &mut Cursive, ws: Arc<Mutex<Workspace>>) {
+        siv.add_global_callback('R', move |siv| {
+            let mut workspace = ws.lock().unwrap();
+            workspace.cmd(Command::Dirty);
+            workspace.draw(siv);
+        });
+    }
+
 
     // pub fn register_move_down(
     //     siv: &mut Cursive,

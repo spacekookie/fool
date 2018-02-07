@@ -34,7 +34,7 @@ pub struct Ui {
 impl Ui {
 
     /// Initialise the UI with a theme
-    pub fn new(t: FoolTheme, state: Buffer) -> Ui {
+    pub fn new(t: FoolTheme) -> Ui {
 
         /* Initialise Cursive */
         let mut siv = Cursive::new();
@@ -44,7 +44,7 @@ impl Ui {
             FoolTheme::Custom(theme) => theme,
         });
 
-        let l = Layout::new(state, siv.screen_size());
+        let l = Layout::new(Buffer::new(), siv.screen_size());
         let mut ws = Workspace::new(l);
         ws.setup(&mut siv);
         ws.draw(&mut siv);
@@ -85,6 +85,7 @@ impl Ui {
     fn register_all_keys(&mut self) {
 
         Input::register_quit(&mut self.siv);
+        Input::register_refresh(&mut self.siv, Arc::clone(&self.ws));
         
         // FIXME: Change this to be handled on the workspace itself
         Input::register_move_up(&mut self.siv, Arc::clone(&self.ws));
