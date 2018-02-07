@@ -38,6 +38,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_165e7c8ca552_key -iv $encrypted_165e7c8ca552_iv
   -in ci/homebrew.priv.enc -out homebrew.priv -d
 - set -e
+- ls -l /usr/include/
 - rustup self update
 install:
 - sh ci/install.sh
