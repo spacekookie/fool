@@ -7,9 +7,9 @@ rust:
   - stable
   - nightly
 
-script:
-  - cargo build --verbose
-  - cargo test --verbose
+# script:
+#   - cargo build --verbose
+#   - cargo test --verbose
 
 branches:
   only:
@@ -61,8 +61,8 @@ matrix:
 # install:
 # - sh ci/install.sh
 # - source ~/.cargo/env || true
-# script:
-# - bash ci/script.sh
+script:
+- bash ci/script.sh
 # after_script: set +e
 # before_deploy:
 # - sh ci/before_deploy.sh
