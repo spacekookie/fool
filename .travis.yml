@@ -1,18 +1,11 @@
 language: rust
 cache: cargo
 rust:
-    - stable
-    - nightly
+  - stable
+  - nightly
 script:
-    - cargo build --verbose
-    - cargo test --verbose
-    -
-    - cargo build --verbose --features=pancurses-backend --no-default-features
-    - cargo test --verbose --features=pancurses-backend --no-default-features
-    -
-    - cargo build --verbose --features=termion-backend --no-default-features
-- cargo test --verbose --features=termion-backend --no-default-features
-
+  - cargo build --verbose
+  - cargo test --verbose
 
 # dist: trusty
 # language: rust
