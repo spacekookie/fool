@@ -1,71 +1,80 @@
-# language: rust
-# cache: cargo
-# rust:
-#   - stable
-#   - nightly
-# script:
-#   - cargo build --verbose
-#   - cargo test --verbose
-
-# dist: trusty
 language: rust
-# services: docker
-# sudo: required
 cache: cargo
 before_cache:
 - chmod -R a+r $HOME/.cargo
 
-# We need the ncurses headers to build 
-# addons:
-#   apt:
-#     packages:
-#     - ncurses-dev
-#     - gcc
+rust:
+  - stable
+  - nightly
 
-env:
-  global:
-  - CRATE_NAME=fool
+script:
+  - cargo build --verbose
+  - cargo test --verbose
+
 branches:
   only:
   - "/^v\\d+\\.\\d+\\.\\d+.*$/"
   - develop
   - master
+
 notifications:
   email:
     on_success: never
     on_failure: never
-matrix:
-  include:
-  - env: TARGET=armv7-unknown-linux-gnueabihf
-  - env: TARGET=i686-unknown-linux-gnu
-  - env: TARGET=x86_64-unknown-linux-gnu
-  - env: TARGET=x86_64-apple-darwin
-    os: osx
-    if: branch =~ /^v\d+\.\d+\.\d+.*$/
-  - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-before_install:
-- openssl aes-256-cbc -K $encrypted_165e7c8ca552_key -iv $encrypted_165e7c8ca552_iv
-  -in ci/homebrew.priv.enc -out homebrew.priv -d
-- set -e
-- ls -l /usr/include/
-- rustup self update
-install:
-- sh ci/install.sh
-- source ~/.cargo/env || true
-script:
-- bash ci/script.sh
-after_script: set +e
-before_deploy:
-- sh ci/before_deploy.sh
-after_deploy:
-- sh ci/after_deploy.sh
-deploy:
-  api_key:
-    secure: zuOwBXefkVKPzw49bZ3BSMGDn2gfWslXlvnoQD8Lr2DJ7Vq1BoUz19KOaD+wOzFEUgSa/fX8zrs0+LlhSxvWhsPJsxE3FN1JWspplkmgWbUG0xpMdtCyMivvUvJuzF/GNlHnrjfpAJOA8UnkyMwKGTe1HkQYM2AOFGXSwwu1jXp62ZIB9ZjyNpkHIUuonw2IkKiE06mfXPApxvNMoIFfWEbNAXBev/c0greVc77pigRgyMiROVBRjY8H6isgXLrxaYBP7YVeK+1k/H2yTR8DbOKmgCSbE8FLDxJO89pG+E1UxnMY1CNq09WB9GON6kQlL8eHCuRxnCRJSyP9OIfmJQGdvC+nFfk0m1kbsHZ5DjQOf5ClKrY3fXYhkXOBKs4iHzKegWyoci27o/Z6ZGc0gGdWfREabRfVSdIGtGD9a6GhhlGv31WiF2mDYWV8Y5xM3wLjaw0ogseCjMqUNwxDe9FxRDxmEovRZmgP0JJAdaRrN3+U9qA6qtB674ZwaVV6m2RrpEqKYk5tXuibZqcRRY6pN3uppEZgDxpOzMJl/n4M910tEZlXw5UUco5flcFvH7ljZoqI7cFNFiIikGHVfuaNQkP+hwWsCAH42NzOwgSgYNd20zeXgHQdxkM97ILDWiz7PsTPsgosxjLglLSn3iJZ7YpqHh4ygMX6OfTMHG0=
-  file_glob: true
-  file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
-  on:
-    condition: "$TRAVIS_RUST_VERSION = stable"
-    tags: true
-  provider: releases
-  skip_cleanup: true
+
+
+# dist: trusty
+# language: rust
+# services: docker
+# sudo: required
+# cache: cargo
+# before_cache:
+# - chmod -R a+r $HOME/.cargo
+
+# # We need the ncurses headers to build 
+# # addons:
+# #   apt:
+# #     packages:
+# #     - ncurses-dev
+# #     - gcc
+
+env:
+  global:
+  - CRATE_NAME=fool
+
+# matrix:
+#   include:
+#   - env: TARGET=armv7-unknown-linux-gnueabihf
+#   - env: TARGET=i686-unknown-linux-gnu
+#   - env: TARGET=x86_64-unknown-linux-gnu
+#   - env: TARGET=x86_64-apple-darwin
+#     os: osx
+#     if: branch =~ /^v\d+\.\d+\.\d+.*$/
+#   - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
+
+# before_install:
+# - openssl aes-256-cbc -K $encrypted_165e7c8ca552_key -iv $encrypted_165e7c8ca552_iv
+#   -in ci/homebrew.priv.enc -out homebrew.priv -d
+# - set -e
+# - ls -l /usr/include/
+# - rustup self update
+# install:
+# - sh ci/install.sh
+# - source ~/.cargo/env || true
+# script:
+# - bash ci/script.sh
+# after_script: set +e
+# before_deploy:
+# - sh ci/before_deploy.sh
+# after_deploy:
+# - sh ci/after_deploy.sh
+# deploy:
+#   api_key:
+#     secure: zuOwBXefkVKPzw49bZ3BSMGDn2gfWslXlvnoQD8Lr2DJ7Vq1BoUz19KOaD+wOzFEUgSa/fX8zrs0+LlhSxvWhsPJsxE3FN1JWspplkmgWbUG0xpMdtCyMivvUvJuzF/GNlHnrjfpAJOA8UnkyMwKGTe1HkQYM2AOFGXSwwu1jXp62ZIB9ZjyNpkHIUuonw2IkKiE06mfXPApxvNMoIFfWEbNAXBev/c0greVc77pigRgyMiROVBRjY8H6isgXLrxaYBP7YVeK+1k/H2yTR8DbOKmgCSbE8FLDxJO89pG+E1UxnMY1CNq09WB9GON6kQlL8eHCuRxnCRJSyP9OIfmJQGdvC+nFfk0m1kbsHZ5DjQOf5ClKrY3fXYhkXOBKs4iHzKegWyoci27o/Z6ZGc0gGdWfREabRfVSdIGtGD9a6GhhlGv31WiF2mDYWV8Y5xM3wLjaw0ogseCjMqUNwxDe9FxRDxmEovRZmgP0JJAdaRrN3+U9qA6qtB674ZwaVV6m2RrpEqKYk5tXuibZqcRRY6pN3uppEZgDxpOzMJl/n4M910tEZlXw5UUco5flcFvH7ljZoqI7cFNFiIikGHVfuaNQkP+hwWsCAH42NzOwgSgYNd20zeXgHQdxkM97ILDWiz7PsTPsgosxjLglLSn3iJZ7YpqHh4ygMX6OfTMHG0=
+#   file_glob: true
+#   file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
+#   on:
+#     condition: "$TRAVIS_RUST_VERSION = stable"
+#     tags: true
+#   provider: releases
+#   skip_cleanup: true
