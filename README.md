@@ -1,8 +1,8 @@
 # fool ♦ [![](https://travis-ci.org/spacekookie/fool.svg?branch=develop)](https://travis-ci.org/spacekookie/fool) [![](https://ci.appveyor.com/api/projects/status/w29yfx0q5kls3013?svg=true)](https://ci.appveyor.com/project/spacekookie/fool)
 
-> Why don't you just type commands in the terminal? It's way faster?
+> Why don't you just use the git cli? It's way faster.
 >
-> **It's exhausting. Why don't you run everywhere? It's faster.**
+> **Why don't you run everywhere? It's exhausting.**
 
 A powerful git commandline interface which is focused on usability. Use quick keyboard shortcuts to manage your repository, files and commits.
 
