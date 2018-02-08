@@ -4,9 +4,9 @@ cache: cargo
 before_cache:
 - chmod -R a+r $HOME/.cargo
 
-rust:
-  - stable
-  - nightly
+# rust:
+#   - stable
+#   - nightly
 
 # script:
 #   - cargo build --verbose
