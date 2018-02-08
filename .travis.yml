@@ -65,19 +65,18 @@ env:
 
 script:
 - bash ci/script.sh
-
-# after_script: set +e
-# before_deploy:
-# - sh ci/before_deploy.sh
-# after_deploy:
-# - sh ci/after_deploy.sh
-# deploy:
-#   api_key:
-#     secure: zuOwBXefkVKPzw49bZ3BSMGDn2gfWslXlvnoQD8Lr2DJ7Vq1BoUz19KOaD+wOzFEUgSa/fX8zrs0+LlhSxvWhsPJsxE3FN1JWspplkmgWbUG0xpMdtCyMivvUvJuzF/GNlHnrjfpAJOA8UnkyMwKGTe1HkQYM2AOFGXSwwu1jXp62ZIB9ZjyNpkHIUuonw2IkKiE06mfXPApxvNMoIFfWEbNAXBev/c0greVc77pigRgyMiROVBRjY8H6isgXLrxaYBP7YVeK+1k/H2yTR8DbOKmgCSbE8FLDxJO89pG+E1UxnMY1CNq09WB9GON6kQlL8eHCuRxnCRJSyP9OIfmJQGdvC+nFfk0m1kbsHZ5DjQOf5ClKrY3fXYhkXOBKs4iHzKegWyoci27o/Z6ZGc0gGdWfREabRfVSdIGtGD9a6GhhlGv31WiF2mDYWV8Y5xM3wLjaw0ogseCjMqUNwxDe9FxRDxmEovRZmgP0JJAdaRrN3+U9qA6qtB674ZwaVV6m2RrpEqKYk5tXuibZqcRRY6pN3uppEZgDxpOzMJl/n4M910tEZlXw5UUco5flcFvH7ljZoqI7cFNFiIikGHVfuaNQkP+hwWsCAH42NzOwgSgYNd20zeXgHQdxkM97ILDWiz7PsTPsgosxjLglLSn3iJZ7YpqHh4ygMX6OfTMHG0=
-#   file_glob: true
-#   file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
-#   on:
-#     condition: "$TRAVIS_RUST_VERSION = stable"
-#     tags: true
-#   provider: releases
-#   skip_cleanup: true
+after_script: set +e
+before_deploy:
+- sh ci/before_deploy.sh
+after_deploy:
+- sh ci/after_deploy.sh
+deploy:
+  api_key:
+    secure: zuOwBXefkVKPzw49bZ3BSMGDn2gfWslXlvnoQD8Lr2DJ7Vq1BoUz19KOaD+wOzFEUgSa/fX8zrs0+LlhSxvWhsPJsxE3FN1JWspplkmgWbUG0xpMdtCyMivvUvJuzF/GNlHnrjfpAJOA8UnkyMwKGTe1HkQYM2AOFGXSwwu1jXp62ZIB9ZjyNpkHIUuonw2IkKiE06mfXPApxvNMoIFfWEbNAXBev/c0greVc77pigRgyMiROVBRjY8H6isgXLrxaYBP7YVeK+1k/H2yTR8DbOKmgCSbE8FLDxJO89pG+E1UxnMY1CNq09WB9GON6kQlL8eHCuRxnCRJSyP9OIfmJQGdvC+nFfk0m1kbsHZ5DjQOf5ClKrY3fXYhkXOBKs4iHzKegWyoci27o/Z6ZGc0gGdWfREabRfVSdIGtGD9a6GhhlGv31WiF2mDYWV8Y5xM3wLjaw0ogseCjMqUNwxDe9FxRDxmEovRZmgP0JJAdaRrN3+U9qA6qtB674ZwaVV6m2RrpEqKYk5tXuibZqcRRY6pN3uppEZgDxpOzMJl/n4M910tEZlXw5UUco5flcFvH7ljZoqI7cFNFiIikGHVfuaNQkP+hwWsCAH42NzOwgSgYNd20zeXgHQdxkM97ILDWiz7PsTPsgosxjLglLSn3iJZ7YpqHh4ygMX6OfTMHG0=
+  file_glob: true
+  file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
+  on:
+    condition: "$TRAVIS_RUST_VERSION = stable"
+    tags: true
+  provider: releases
+  skip_cleanup: true
