@@ -1,3 +1,4 @@
+services: docker
 language: rust
 cache: cargo
 before_cache:
@@ -25,7 +26,6 @@ notifications:
 
 # dist: trusty
 # language: rust
-# services: docker
 # sudo: required
 # cache: cargo
 # before_cache:
