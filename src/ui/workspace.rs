@@ -132,6 +132,11 @@ impl Workspace {
         }
 
         self.dirty = true;
-        eprintln!("Pos: {}, Size: {}, State: {:?}", self.select.pos, self.select.size, self.select.mode);
+        // eprintln!(
+        //     "Pos: {}, Size: {}, State: {:?}",
+        //     self.select.pos,
+        //     self.select.size,
+        //     self.select.mode
+        // );
     }
 }
