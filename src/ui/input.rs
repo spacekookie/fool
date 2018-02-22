@@ -92,7 +92,6 @@ impl Input {
         });
     }
 
-
     // pub fn register_move_down(
     //     siv: &mut Cursive,
     //     bf: Arc<Mutex<Workspace>>,
