@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu
 MAINTAINER Katharina Fey <kookie@spacekookie.de>
 
 RUN apt install -y libncurses5-dev
