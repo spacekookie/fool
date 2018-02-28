@@ -10,6 +10,6 @@ authors = ["Katharina Fey <kookie@spacekookie.de>"]
 clap = "2.29.*"
 
 [dependencies.cursive]
-git = "https://github.com/gyscos/Cursive"
+git = "https://github.com/gyscos/Cursive" # todo bind 0.8
 # default-features = false
 # features = ["termion-backend"]

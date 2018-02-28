@@ -6,7 +6,6 @@ mod state;
 mod ui;
 use ui::*;
 
-
 use clap::App;
 
 const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
@@ -24,7 +23,6 @@ fn main() {
         .get_matches();
 
     // TODO: Handle config creation/ loading
-
 
     /* Initialise the main Ui (blocks) */
     let mut ui = Ui::new(FoolTheme::Dark);
