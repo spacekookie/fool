@@ -1,2 +1,5 @@
-[build]
-image = "spacekookie/fool:latest"
+[target.x86_64-unknown-linux-gnu]
+image = "spacekookie/fool:linux_x86_64"
+
+[target.i686-unknown-linux-gnu]
+image = "spacekookie/fool:linux_i686"
