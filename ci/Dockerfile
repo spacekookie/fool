@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM japaric/x86_64-unknown-linux-gnu:latest
 MAINTAINER Katharina Fey <kookie@spacekookie.de>
 
 RUN apt-get update
