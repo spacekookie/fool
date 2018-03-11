@@ -1,4 +1,4 @@
-FROM japaric/i686-unknown-freebsd:latest
+FROM japaric/armv7-unknown-linux-gnueabihf:latest
 MAINTAINER Katharina Fey <kookie@spacekookie.de>
 
 RUN apt-get update
