@@ -61,7 +61,7 @@ impl Ui {
         });
 
         /* Register all key callbacks */
-        me.register_all_keys();
+        // me.register_all_keys();
 
         return me;
     }
